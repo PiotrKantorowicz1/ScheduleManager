@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Manager.Core.Enums;
 using Manager.Core.Models;
 using Manager.Struct.DTO;
 

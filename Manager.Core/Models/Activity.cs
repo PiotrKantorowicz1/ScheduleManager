@@ -1,5 +1,4 @@
 using System;
-using Manager.Core.Enums;
 
 namespace Manager.Core.Models
 {
@@ -18,5 +17,26 @@ namespace Manager.Core.Models
         public ActivityStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+    }
+
+    public enum ActivityPriority : byte
+    {
+        High = 1,
+        Medium = 2,
+        Low = 3
+    }
+
+    public enum ActivityStatus : byte
+    {
+        ToMake = 1,
+        Done = 2
+    }
+
+    public enum ActivityType : byte
+    {
+        Work = 1,
+        Programming = 2,
+        Private = 3,
+        Other = 4
     }
 }

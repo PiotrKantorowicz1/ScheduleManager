@@ -6,6 +6,7 @@ using Manager.Struct.DTO;
 using System.Collections.Generic;
 using Manager.Struct.Exceptions;
 using System.Threading.Tasks;
+using Manager.Core.Queries.Users;
 using Manager.Core.Types;
 
 namespace Manager.Struct.Services
@@ -52,16 +53,16 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(users);
         }
 
-        public async Task<IEnumerable<UserDto>> FilterByProfession(string profession)
+        public async Task<PagedResult<UserDto>> FilterByProfession(BrowseUsersProfessions query)
         {
-            var filterUsers = await _userRepository.FindByAsync(u => u.Profession == profession);
-            return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(filterUsers);
+            var filterUsers = await _userRepository.GetAllPageable(u => u.Profession == query.Profession, query);
+            return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
-        public async Task<IEnumerable<UserDto>> FilterByRole(string role)
+        public async Task<PagedResult<UserDto>> FilterByRole(BrowseUsesrRoles query)
         {
-            var filterUsers = await _userRepository.FindByAsync(u => u.Role == role);
-            return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(filterUsers);
+            var filterUsers = await _userRepository.GetAllPageable(u => u.Role == query.Role, query);
+            return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
         public async Task<bool> FindUserInRole(int id)

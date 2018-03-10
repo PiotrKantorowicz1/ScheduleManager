@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Manager.Core.Enums;
 
 namespace Manager.Core.Models
 {
@@ -24,5 +23,20 @@ namespace Manager.Core.Models
         public User Creator { get; set; }
         public int CreatorId { get; set; }
         public ICollection<Attendee> Attendees { get; set; }
+    }
+
+    public enum ScheduleStatus : byte
+    {
+        Valid = 1,
+        Cancelled = 2
+    }
+
+    public enum ScheduleType : byte
+    {
+        Work = 1,
+        Coffee = 2,
+        Doctor = 3,
+        Shopping = 4,
+        Other = 5
     }
 }

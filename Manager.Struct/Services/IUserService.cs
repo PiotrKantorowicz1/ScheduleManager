@@ -1,6 +1,7 @@
 using Manager.Struct.DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Manager.Core.Queries.Users;
 using Manager.Core.Types;
 
 namespace Manager.Struct.Services
@@ -11,8 +12,8 @@ namespace Manager.Struct.Services
         Task<UserDto> GetByEmail(string email);
         Task<IEnumerable<UserDto>> BrowseUsersAsync();
         Task<PagedResult<UserDto>> GetAllPegeable();
-        Task<IEnumerable<UserDto>> FilterByProfession(string profession);
-        Task<IEnumerable<UserDto>> FilterByRole(string role);
+        Task<PagedResult<UserDto>> FilterByProfession(BrowseUsersProfessions query);
+        Task<PagedResult<UserDto>> FilterByRole(BrowseUsesrRoles query);
         Task<bool> FindUserInRole(int id);
         Task LoginAsync(string email, string password);
         Task<UserDto> RegisterAsync(string name, string email, string fullName,

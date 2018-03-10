@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.DTO;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
+using Manager.Core.Queries.Users;
 
 namespace Manager.Api.Controllers
 {
@@ -22,6 +23,24 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Get()
         {
             var users = await _userService.GetAllPegeable();
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByProfession/{profession}")]
+        public async Task<IActionResult> Get(BrowseUsersProfessions query)
+        {
+            var users = await _userService.FilterByProfession(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByRole/{role}")]
+        public async Task<IActionResult> Get(BrowseUsesrRoles query)
+        {
+            var users = await _userService.FilterByRole(query);
 
             return Json(users);
         }

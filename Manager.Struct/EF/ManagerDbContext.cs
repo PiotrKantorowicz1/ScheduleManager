@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Manager.Core.Enums;
 using Manager.Core.Models;
 
 namespace Manager.Struct.EF
