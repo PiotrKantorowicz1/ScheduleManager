@@ -29,4 +29,11 @@
     <ProjectReference Include="..\Manager.Core\Manager.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Accounts\" />
+    <Folder Include="Commands\Users\" />
+    <Folder Include="Handlers\Accounts\" />
+    <Folder Include="Handlers\Users\" />
+  </ItemGroup>
+
 </Project>

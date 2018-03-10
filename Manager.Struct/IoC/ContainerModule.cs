@@ -21,6 +21,7 @@ namespace Manager.Struct.IoC
             builder.RegisterModule<RepositoryModule>();
             builder.RegisterModule<ServiceModule>();
             builder.RegisterModule<SqlModule>();
+            builder.RegisterModule<DomainModule>();
             builder.RegisterModule(new SettingsModule(_configuration));
         }
     }

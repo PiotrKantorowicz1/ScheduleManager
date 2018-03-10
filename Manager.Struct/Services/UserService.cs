@@ -6,6 +6,7 @@ using Manager.Struct.DTO;
 using System.Collections.Generic;
 using Manager.Struct.Exceptions;
 using System.Threading.Tasks;
+using Manager.Core.Types;
 
 namespace Manager.Struct.Services
 {
@@ -43,6 +44,12 @@ namespace Manager.Struct.Services
         {
             var users = await _userRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(users);
+        }
+
+        public async Task<PagedResult<UserDto>> GetAllPegeable()
+        {
+            var users = await _userRepository.GetAllPageable();
+            return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(users);
         }
 
         public async Task<IEnumerable<UserDto>> FilterByProfession(string profession)

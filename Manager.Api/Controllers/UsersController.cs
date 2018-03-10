@@ -19,12 +19,11 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("GetAllPageable")]
-        public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Get()
         {
-            var users = await _userService.BrowseUsersAsync();
-            var pagedUsers = CreatePagedResults(users, page - 1, pageSize);
+            var users = await _userService.GetAllPegeable();
 
-            return Json(pagedUsers);
+            return Json(users);
         }
 
         [HttpGet]

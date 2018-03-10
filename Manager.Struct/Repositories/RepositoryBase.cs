@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Manager.Struct.EF;
 using System.Threading.Tasks;
 using Manager.Core.Repositories;
+using Manager.Core.Types;
 
 namespace Manager.Struct.Repositories
 {
@@ -33,6 +34,13 @@ namespace Manager.Struct.Repositories
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
             => await _context.Set<T>().ToListAsync();
+
+        public async Task<PagedResult<T>> GetAllPageable()
+            => await _context.Set<T>().PaginateAsync();
+
+        public async Task<PagedResult<T>> GetAllPageable<TQuery>(Expression<Func<T, bool>> predicate, TQuery query)
+            where TQuery : PagedQueryBase
+            => await _context.Set<T>().Where(predicate).PaginateAsync(); 
 
         public virtual async Task<IEnumerable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
