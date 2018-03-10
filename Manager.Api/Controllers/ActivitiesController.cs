@@ -6,21 +6,20 @@ using Manager.Struct.DTO;
 namespace Manager.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class ActivityController : BaseApiController
+    public class ActivitiesController : Controller
     {
         private readonly IActivityService _activityService;
 
-        public ActivityController(IActivityService activityService)
+        public ActivitiesController(IActivityService activityService)
         {
             _activityService = activityService;
         }
 
-        public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Get()
         {
             var activity = await _activityService.BrowseAsync();
-            var pagedActivity = CreatePagedResults(activity, page - 1, pageSize);
 
-            return Json(pagedActivity);
+            return Json(activity);
         }
 
         [HttpGet("{id}", Name = "GetTask")]

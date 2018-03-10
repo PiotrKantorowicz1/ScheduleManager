@@ -7,7 +7,7 @@ using Manager.Core.Queries.Users;
 namespace Manager.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class UsersController : BaseApiController
+    public class UsersController : Controller
     {
         private readonly IUserService _userService;
         private readonly IScheduleService _scheduleService;
@@ -61,17 +61,16 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("{id}/Schedules")]
-        public async Task<IActionResult> GetSchedulesAsync(int id, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetSchedulesAsync(int id)
         {
             var userSchedules = await _scheduleService.GetSchedulesAsync(id);
-            var pagedUserSchedules = CreatePagedResults(userSchedules, page - 1, pageSize);
 
             if (userSchedules == null)
             {
                 NotFound();
             }
 
-            return Json(pagedUserSchedules);
+            return Json(userSchedules);
         }
 
         [HttpPost]

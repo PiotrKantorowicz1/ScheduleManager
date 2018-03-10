@@ -6,7 +6,7 @@ using Manager.Struct.DTO;
 namespace Manager.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class SchedulesController : BaseApiController
+    public class SchedulesController : Controller
     {
         private readonly IScheduleService _scheduleSerivce;
 
@@ -15,12 +15,11 @@ namespace Manager.Api.Controllers
             _scheduleSerivce = scheduleSerivce;
         }
 
-        public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Get()
         {
             var schedules = await _scheduleSerivce.BrowseAsync();
-            var pagedSchedules = CreatePagedResults(schedules, page - 1, pageSize);
 
-            return Json(pagedSchedules);
+            return Json(schedules);
         }
 
         [HttpGet("{id}", Name = "GetSchedule")]
