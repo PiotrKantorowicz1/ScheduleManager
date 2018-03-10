@@ -32,10 +32,9 @@ namespace Manager.Core.Models
         public ICollection<Schedule> SchedulesCreated { get; set; }
         public ICollection<Attendee> SchedulesAttended { get; set; }
 
-        public User(int userId, string name, string email, string fullName, 
+        public User(string name, string email, string fullName, 
             string password,string avatar, string role, string salt, string profession)
         {
-            Id = userId;
             SetName(name);
             SetFullName(fullName);
             SetPassword(password, salt);

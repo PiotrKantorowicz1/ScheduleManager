@@ -25,82 +25,93 @@ namespace Manager.Struct.EF
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            builder.Entity<Schedule>()
-                .ToTable("Schedules");
+            var scheduleBuilder = builder.Entity<Schedule>();
 
-            builder.Entity<Schedule>()
-                .Property(s => s.CreatorId)
-                .IsRequired();
+            scheduleBuilder
+                .ToTable("Schedules")
+                .Property(s => s.CreatorId).IsRequired();
 
-            builder.Entity<Schedule>()
+            scheduleBuilder
                 .Property(s => s.CreatedAt)
                 .HasDefaultValue(DateTime.Now);
 
-            builder.Entity<Schedule>()
+            scheduleBuilder
                 .Property(s => s.UpdatedAt)
                 .HasDefaultValue(DateTime.Now);
 
-            builder.Entity<Schedule>()
+            scheduleBuilder
                 .Property(s => s.Type)
                 .HasDefaultValue(ScheduleType.Work);
 
-            builder.Entity<Schedule>()
-                .Property(s => s.Status)
+            scheduleBuilder
+              .Property(s => s.Status)
                 .HasDefaultValue(ScheduleStatus.Valid);
 
-            builder.Entity<Schedule>()
+            scheduleBuilder
                 .HasOne(s => s.Creator)
                 .WithMany(c => c.SchedulesCreated);
 
-            builder.Entity<User>()
-                .ToTable("Users");
+            var userBuilder = builder.Entity<User>();
 
-            builder.Entity<User>()
+            userBuilder.ToTable("Users");
+
+            userBuilder
                 .Property(u => u.Name)
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Entity<Attendee>()
-                .ToTable("Attendee");
+            userBuilder
+                .Property(u => u.FullName)
+                .HasMaxLength(150);
 
-            builder.Entity<Attendee>()
+            userBuilder
+                .Property(u => u.Email)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            var attendeesBuilder = builder.Entity<Attendee>();
+
+            attendeesBuilder.ToTable("Attendee");
+
+            attendeesBuilder
                 .HasOne(a => a.User)
                 .WithMany(u => u.SchedulesAttended)
                 .HasForeignKey(a => a.UserId);
 
-            builder.Entity<Attendee>()
+            attendeesBuilder
                 .HasOne(a => a.Schedule)
                 .WithMany(s => s.Attendees)
                 .HasForeignKey(a => a.ScheduleId);
 
-            builder.Entity<Activity>()
-                .ToTable("Activities");
+            var activityBuilder = builder.Entity<Activity>();
 
-            builder.Entity<Activity>()
+            activityBuilder.ToTable("Activities");
+
+            activityBuilder
                 .Property(t => t.CreatorId)
                 .IsRequired();
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .Property(t => t.CreatedAt)
                 .HasDefaultValue(DateTime.Now);
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .Property(t => t.UpdatedAt)
                 .HasDefaultValue(DateTime.Now);
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .Property(t => t.Type)
                 .HasDefaultValue(ActivityType.Work);
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .Property(t => t.Status)
                 .HasDefaultValue(ActivityStatus.ToMake);
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .Property(t => t.Priority)
                 .HasDefaultValue(ActivityPriority.Medium);
 
-            builder.Entity<Activity>()
+            activityBuilder
                 .HasOne(t => t.Creator)
                 .WithMany(c => c.ActivityCreated);
         }

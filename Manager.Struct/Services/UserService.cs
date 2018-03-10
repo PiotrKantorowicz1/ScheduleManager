@@ -83,7 +83,7 @@ namespace Manager.Struct.Services
                 "Invalid credentials");
         }
 
-        public async Task<UserDto> RegisterAsync(int userId, string name, string email, string fullName,
+        public async Task<UserDto> RegisterAsync(string name, string email, string fullName,
             string password,string avatar, string role, string profession)
         {
             var user = await _userRepository.GetAsync(name);
@@ -97,7 +97,7 @@ namespace Manager.Struct.Services
             var salt = _crypton.GetSalt(password);
             var hash = _crypton.GetHash(password, salt);
 
-            user = new User(userId, name, email, fullName, hash, avatar, role, salt, profession);
+            user = new User(name, email, fullName, hash, avatar, role, salt, profession);
             await _userRepository.AddAsync(user);
 
             return _mapper.Map<User, UserDto>(user);

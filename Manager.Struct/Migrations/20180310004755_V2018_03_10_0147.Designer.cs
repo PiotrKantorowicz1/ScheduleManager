@@ -12,8 +12,8 @@ using System;
 namespace Manager.Struct.Migrations
 {
     [DbContext(typeof(ManagerDbContext))]
-    [Migration("20180301223840_V2018_03_01_2338")]
-    partial class V2018_03_01_2338
+    [Migration("20180310004755_V2018_03_10_0147")]
+    partial class V2018_03_10_0147
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,7 +29,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 1, 23, 38, 39, 894, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 948, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -57,7 +57,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 1, 23, 38, 39, 894, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 948, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -91,7 +91,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 1, 23, 38, 39, 886, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 940, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -115,7 +115,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 1, 23, 38, 39, 889, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 943, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -133,11 +133,24 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(150);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<string>("Password");
+
                     b.Property<string>("Profession");
+
+                    b.Property<string>("Role");
+
+                    b.Property<string>("Salt");
 
                     b.Property<DateTime>("UpdatedAt");
 

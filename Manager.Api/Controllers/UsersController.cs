@@ -65,7 +65,7 @@ namespace Manager.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newUser = await _userService.RegisterAsync(user.Id, user.Name, user.Email, user.FullName,
+            var newUser = await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
                 user.Password, user.Avatar, user.Role, user.Profession);
 
             return Json(newUser);

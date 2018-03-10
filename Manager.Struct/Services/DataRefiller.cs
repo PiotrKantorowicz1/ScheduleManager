@@ -40,17 +40,17 @@ namespace Manager.Struct.Services
           
             Logger.Trace("Initializing data ...");
 
-            var user1 = await _userService.RegisterAsync("Piotr Kantorowicz", "Developer", "avatar_02.png");
+            var user1 = await _userService.RegisterAsync("PiotrK", "piotr@gmail.com", "PiotrKantorowicz", "secret", "avatar_02.png", "admin", "Developer");
             Logger.Trace($"Adding user: '{user1}'.");
-            var user2 = await _userService.RegisterAsync("Sandra Sernik", "Web Designer", "avatar_03.jpg");
+            var user2 = await _userService.RegisterAsync("SandraS", "sandra@gmail.com" , "Sandra Sernik", "secret", "avatar_03.jpg", "editor", "Web Designer");
             Logger.Trace($"Adding user: '{user2}'.");
-            var user3 = await _userService.RegisterAsync("Mateusz Borkowski", "Engineer", "avatar_05.png");
+            var user3 = await _userService.RegisterAsync("JanuszC", "janusz@gmail.com", "Janusz Cieslak", "secret", "avatar_03.jpg", "editor", "Quality Assurance");
             Logger.Trace($"Adding user: '{user3}'.");
-            var user4 = await _userService.RegisterAsync("Krzysztof Szczot", "Network Engineer", "avatar_01.png");
+            var user4 = await _userService.RegisterAsync("Vorek", "vortek@gmail.com", "Vorek Vox", "secret", "avatar_04.jpg", "user", "Developer");
             Logger.Trace($"Adding user: '{user4}'.");
-            var user5 = await _userService.RegisterAsync("Alina Malinowska", "Developer", "avatar_03.jpg");
+            var user5 = await _userService.RegisterAsync("Artur", "artur@gmail.com", "Artut Kupczak", "secret", "avatar_04.jpg", "user", "kasztan");
             Logger.Trace($"Adding user: '{user5}'.");
-            var user6 = await _userService.RegisterAsync("Bart Niemczyk", "Hacker", "avatar_05.png");
+            var user6 = await _userService.RegisterAsync("Kamil", "kamil@gmail.com", "Kamil Kuczkeos", "secret", "avatar_01.png", "contractor", "Web Designer");
             Logger.Trace($"Adding user: '{user6}'.");
 
             for (var i = 1; i <= 300; i++)

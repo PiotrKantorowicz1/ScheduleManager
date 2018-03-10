@@ -13,7 +13,7 @@ namespace Manager.Struct.Services
         Task<IEnumerable<UserDto>> FilterByRole(string role);
         Task<bool> FindUserInRole(int id);
         Task LoginAsync(string email, string password);
-        Task<UserDto> RegisterAsync(int userId, string name, string email, string fullName,
+        Task<UserDto> RegisterAsync(string name, string email, string fullName,
             string password,string avatar, string role, string profession);
         Task UpdateUserAsync(UserDto user);
         Task RemoveUserSchedule(int id);
