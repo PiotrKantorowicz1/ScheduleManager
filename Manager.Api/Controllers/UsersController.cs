@@ -17,16 +17,18 @@ namespace Manager.Api.Controllers
             _scheduleService = scheduleService;
         }
 
-
+        [HttpGet]
+        [Route("GetAllPageable")]
         public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
         {
-            var users = await _userService.BrowseAsync();
+            var users = await _userService.BrowseUsersAsync();
             var pagedUsers = CreatePagedResults(users, page - 1, pageSize);
 
             return Json(pagedUsers);
         }
 
-        [HttpGet("{id}", Name = "GetUser")]
+        [HttpGet]
+        [Route("Get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var user = await _userService.GetAsync(id);
@@ -39,7 +41,8 @@ namespace Manager.Api.Controllers
             return Json(user);
         }
 
-        [HttpGet("{id}/schedules", Name = "GetUserSchedules")]
+        [HttpGet]
+        [Route("{id}/Schedules")]
         public async Task<IActionResult> GetSchedulesAsync(int id, int page = 1, int pageSize = 10)
         {
             var userSchedules = await _scheduleService.GetSchedulesAsync(id);
@@ -54,6 +57,7 @@ namespace Manager.Api.Controllers
         }
 
         [HttpPost]
+        [Route("Register")]
         public async Task<IActionResult> Register([FromBody]UserDto user)
         {
             if (!ModelState.IsValid)
@@ -61,23 +65,26 @@ namespace Manager.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newUser = await _userService.RegisterAsync(user.Name, user.Avatar, user.Profession);
+            var newUser = await _userService.RegisterAsync(user.Id, user.Name, user.Email, user.FullName,
+                user.Password, user.Avatar, user.Role, user.Profession);
 
             return Json(newUser);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]UserDto user)
+        [HttpPut]
+        [Route("Update")]
+        public async Task<IActionResult> Put([FromBody]UserDto user)
         {
-            await _userService.EditAsync(id, user);
+            await _userService.UpdateUserAsync(user);
 
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("Remove/{id}")]
         public IActionResult Delete(int id)
         {
-            _userService.DeleteAsync(id);
+            _userService.RemoveUserAsync(id);
 
             return NoContent();
         }
