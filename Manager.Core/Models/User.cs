@@ -32,11 +32,12 @@ namespace Manager.Core.Models
         public ICollection<Schedule> SchedulesCreated { get; set; }
         public ICollection<Attendee> SchedulesAttended { get; set; }
 
-        public User(int userId, string name, string email, string password,
-            string avatar, string role, string salt, string profession)
+        public User(int userId, string name, string email, string fullName, 
+            string password,string avatar, string role, string salt, string profession)
         {
             Id = userId;
             SetName(name);
+            SetFullName(fullName);
             SetPassword(password, salt);
             SetEmail(email);
             SetRole(role);
@@ -60,6 +61,18 @@ namespace Manager.Core.Models
             }
 
             Name = username.ToLowerInvariant();
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetFullName(string fullName)
+        {
+            if (fullName.Length > 100)
+            {
+                throw new DomainException(ErrorCodes.InvaliFullName,
+                    "Fullname cannot be longer than 100 characters");
+            }
+
+            FullName = fullName;
             UpdatedAt = DateTime.UtcNow;
         }
 

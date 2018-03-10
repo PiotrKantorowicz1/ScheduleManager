@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Manager.Struct.Services
+﻿namespace Manager.Struct.Services
 {
-    class ICrypton
+    public interface ICrypton
     {
+        string GetSalt(string value);
+        string GetHash(string value, string salt);
     }
 }

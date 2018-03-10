@@ -8,5 +8,6 @@ namespace Manager.Struct.Exceptions
         public static string ScheduleNotFound => "schedule_not_found";
         public static string UserNotFound => "user_not_found";
         public static string DetailsNotFound => "details_not_found";
+        public static string InvalidCredentials => "invalid_credentials";
     }
 }
