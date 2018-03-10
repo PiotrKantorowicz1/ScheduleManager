@@ -11,6 +11,9 @@ using Manager.Struct.IoC;
 using Manager.Struct.Services;
 using Manager.Struct.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace Manager.Api
 {
@@ -46,9 +49,13 @@ namespace Manager.Api
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            IApplicationLifetime appLifetime)
+            IApplicationLifetime appLifetime, ILoggerFactory loggerFactory)
         {
             app.UseStaticFiles();
+
+            loggerFactory.AddNLog();
+            app.AddNLogWeb();
+            env.ConfigureNLog("nlog.config");
 
             app.UseExceptionHandler();
 

@@ -22,8 +22,8 @@ namespace Manager.Api
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
-                    logging.AddDebug();
-                    logging.AddConsole();
+                    //logging.AddDebug();
+                    //logging.AddConsole();
                 })
                 .UseIISIntegration()
                 .UseDefaultServiceProvider((context, options) =>

@@ -72,10 +72,10 @@ namespace Manager.Api.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
-        public async Task<IActionResult> Put([FromBody]UserDto user)
+        [Route("Update/{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]UserDto user)
         {
-            await _userService.UpdateUserAsync(user);
+            await _userService.UpdateUserAsync(id, user);
 
             return NoContent();
         }

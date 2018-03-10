@@ -103,9 +103,9 @@ namespace Manager.Struct.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
-        public async Task UpdateUserAsync(UserDto user)
+        public async Task UpdateUserAsync(int id, UserDto user)
         {
-            var updUser = await _userRepository.GetAsync(user.Name);
+            var updUser = await _userRepository.GetAsync(id);
             if (updUser == null)
             {
                 throw new ServiceException(ErrorCodes.InvalidName,

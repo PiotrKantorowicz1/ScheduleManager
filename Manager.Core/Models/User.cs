@@ -146,11 +146,6 @@ namespace Manager.Core.Models
                 throw new DomainException(ErrorCodes.InvalidAvatar,
                     "User must have avatar.");
             }
-            if (!avatar.Contains(".jpg") || !avatar.Contains(".png"))
-            {
-                throw new DomainException(ErrorCodes.InvalidAvatar,
-                    "This avatar is not valid.");
-            }
 
             Avatar = avatar;
             UpdatedAt = DateTime.UtcNow;
