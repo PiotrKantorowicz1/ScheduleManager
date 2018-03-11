@@ -5,6 +5,7 @@ namespace Manager.Core.Repositories
 {
     public interface IActivityRepository : IRepositoryBase<Activity>
     {        
-        Task<Activity> GetAsync(int id);      
+        Task<Activity> GetAsync(int id);    
+        Task<Activity> GetByTitleAsync(string title);          
     }
 }

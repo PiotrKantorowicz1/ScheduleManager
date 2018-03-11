@@ -2,7 +2,7 @@
 
 namespace Manager.Core.Queries.Users
 {
-    public class BrowseUsersProfessions : PagedQueryBase
+    public class BrowseUsersByProfession : PagedQueryBase
     {
         public string Profession { get; set; }
     }

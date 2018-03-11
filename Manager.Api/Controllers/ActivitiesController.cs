@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
-using Manager.Struct.DTO;
+using Manager.Core.Models;
+using Manager.Core.Queries.Activities;
 
 namespace Manager.Api.Controllers
 {
@@ -15,14 +16,44 @@ namespace Manager.Api.Controllers
             _activityService = activityService;
         }
 
+        [HttpGet]
+        [Route("GetAllPageable")]
         public async Task<IActionResult> Get()
         {
-            var activity = await _activityService.BrowseAsync();
+            var activity = await _activityService.GetAllPageable();
 
             return Json(activity);
         }
 
-        [HttpGet("{id}", Name = "GetTask")]
+        [HttpGet]
+        [Route("FilterByCreator/{creatorId}")]
+        public async Task<IActionResult> Get(BrowseActivitiesByCreator query)
+        {
+            var users = await _activityService.FilterByCreator(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByTitle/{title}")]
+        public async Task<IActionResult> Get(BrowseActivitiesByTitle query)
+        {
+            var users = await _activityService.FilterByTitle(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByLocation/{location}")]
+        public async Task<IActionResult> Get(BrowseActivitiesByLocation query)
+        {
+            var users = await _activityService.FilterByLocation(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("Get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var activity = await _activityService.GetAsync(id);
@@ -35,7 +66,8 @@ namespace Manager.Api.Controllers
             return Json(activity);
         }
 
-        [HttpGet("{id}/details", Name = "GetTaskDetails")]
+        [HttpGet]
+        [Route("{id}/Details")]
         public async Task<IActionResult> GetTaskDetails(int id)
         {
             var activityDetails = await _activityService.GetDetailsAsync(id);
@@ -49,32 +81,27 @@ namespace Manager.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ActivityDto activity)
+        [Route("Create")]
+        public async Task<IActionResult> Create([FromBody] Activity activity)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            await _activityService.CreateAsync(activity.Id, activity.Title, activity.Description, activity.TimeStart,
+                activity.TimeEnd, activity.Location,activity.CreatorId, activity.Type, activity.Priority, activity.Status);
 
-            var newActivity = await _activityService.CreateAsync(activity);
-
-            return Json(newActivity);
+            return Created($"users/{activity.Title}", null);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _activityService.EditAsync(id);
+        [HttpPut]
+        [Route("Update/{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Activity activity)
+        { 
+            await _activityService.UpdateAsync(id, activity.Title, activity.Description, activity.TimeStart, activity.TimeEnd,
+                activity.Location, activity.CreatorId, activity.Type, activity.Priority, activity.Status);
 
             return NoContent();
         }
 
-        [HttpDelete("{id}", Name = "RemoveTask")]
+        [HttpDelete]
+        [Route("Remove/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _activityService.DeleteAsync(id);

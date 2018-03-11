@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Manager.Struct.DTO;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
+using Manager.Core.Models;
 using Manager.Core.Queries.Users;
 
 namespace Manager.Api.Controllers
@@ -29,7 +29,7 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("FilterByProfession/{profession}")]
-        public async Task<IActionResult> Get(BrowseUsersProfessions query)
+        public async Task<IActionResult> Get(BrowseUsersByProfession query)
         {
             var users = await _userService.FilterByProfession(query);
 
@@ -38,7 +38,7 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("FilterByRole/{role}")]
-        public async Task<IActionResult> Get(BrowseUsesrRoles query)
+        public async Task<IActionResult> Get(BrowseUsersByRole query)
         {
             var users = await _userService.FilterByRole(query);
 
@@ -75,24 +75,20 @@ namespace Manager.Api.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody]UserDto user)
+        public async Task<IActionResult> Register([FromBody]User user)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var newUser = await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
+            await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
                 user.Password, user.Avatar, user.Role, user.Profession);
 
-            return Json(newUser);
+            return Created($"users/{user.Email}", null);
         }
 
         [HttpPut]
         [Route("Update/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]UserDto user)
+        public async Task<IActionResult> Put(int id, [FromBody]User user)
         {
-            await _userService.UpdateUserAsync(id, user);
+            await _userService.UpdateUserAsync(id, user.Name, user.Email, user.FullName,
+                user.Password, user.Avatar, user.Role, user.Profession);
 
             return NoContent();
         }
