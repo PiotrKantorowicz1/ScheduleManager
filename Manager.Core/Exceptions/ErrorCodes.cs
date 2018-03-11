@@ -7,6 +7,7 @@
         public static string InvalidRole => "invalid_role";
         public static string InvalidUsername => "invalid_username";
         public static string InvaliFullName => "invalid_fullname";
+        public static string InvaliProfession => "invalid_profession";
         public static string InvalidAvatar => "invalid_avatar";       
         public static string InvalidTitle => "invalid_title";       
         public static string InvalidDescription => "invalid_description";       

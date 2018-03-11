@@ -13,5 +13,8 @@ namespace Manager.Struct.Repositories
 
         public async Task<Activity> GetAsync(int id)
             => await GetSingleAsync(a => a.Id == id);
+
+        public async Task<Activity> GetByTitleAsync(string title)
+            => await GetSingleAsync(a => a.Title == title);
     }
 }

@@ -155,12 +155,12 @@ namespace Manager.Core.Models
         {
             if (string.IsNullOrEmpty(profession))
             {
-                throw new DomainException(ErrorCodes.IvalidProfession,
+                throw new DomainException(ErrorCodes.InvaliProfession,
                     "Profession cannot be empty.");
             }
             if (profession.Length > 1000)
             {
-                throw new DomainException(ErrorCodes.IvalidProfession,
+                throw new DomainException(ErrorCodes.InvaliProfession,
                     "Profession field cannot be longer than 100 characters.");
             }
 

@@ -53,13 +53,13 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(users);
         }
 
-        public async Task<PagedResult<UserDto>> FilterByProfession(BrowseUsersProfessions query)
+        public async Task<PagedResult<UserDto>> FilterByProfession(BrowseUsersByProfession query)
         {
             var filterUsers = await _userRepository.GetAllPageable(u => u.Profession == query.Profession, query);
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
-        public async Task<PagedResult<UserDto>> FilterByRole(BrowseUsesrRoles query)
+        public async Task<PagedResult<UserDto>> FilterByRole(BrowseUsersByRole query)
         {
             var filterUsers = await _userRepository.GetAllPageable(u => u.Role == query.Role, query);
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
@@ -111,26 +111,27 @@ namespace Manager.Struct.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
-        public async Task UpdateUserAsync(int id, UserDto user)
+        public async Task UpdateUserAsync(int id, string name, string email, string fullName,
+            string password, string avatar, string role, string profession)
         {
-            var updUser = await _userRepository.GetAsync(id);
-            if (updUser == null)
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
             {
                 throw new ServiceException(ErrorCodes.InvalidName,
-                    $"User with id: {user.Id} not exists.");
+                    $"User with id: {name} not exists.");
             }
 
-            updUser.Name = user.Name;
-            updUser.Email = user.Email;
-            updUser.FullName = user.FullName;
-            updUser.Password = user.Password;
-            updUser.Avatar = user.Avatar;
-            updUser.Role = user.Role;
-            updUser.Profession = user.Profession;
+            var salt = _crypton.GetSalt(password);
 
-            updUser.UpdatedAt = DateTime.UtcNow;
+            user.SetName(name);
+            user.SetEmail(email);
+            user.SetFullName(fullName);
+            user.SetPassword(password, salt);
+            user.SetAvatar(avatar);
+            user.SetRole(role);
+            user.SetProfession(profession);          
 
-            await _userRepository.UpdateAsync(updUser);
+            await _userRepository.UpdateAsync(user);
         }      
 
         public async Task RemoveUserSchedule(int id)

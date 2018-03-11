@@ -29,7 +29,7 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("FilterByProfession/{profession}")]
-        public async Task<IActionResult> Get(BrowseUsersProfessions query)
+        public async Task<IActionResult> Get(BrowseUsersByProfession query)
         {
             var users = await _userService.FilterByProfession(query);
 
@@ -38,7 +38,7 @@ namespace Manager.Api.Controllers
 
         [HttpGet]
         [Route("FilterByRole/{role}")]
-        public async Task<IActionResult> Get(BrowseUsesrRoles query)
+        public async Task<IActionResult> Get(BrowseUsersByRole query)
         {
             var users = await _userService.FilterByRole(query);
 
@@ -92,7 +92,8 @@ namespace Manager.Api.Controllers
         [Route("Update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]UserDto user)
         {
-            await _userService.UpdateUserAsync(id, user);
+            await _userService.UpdateUserAsync(id, user.Name, user.Email, user.FullName,
+                user.Password, user.Avatar, user.Role, user.Profession);
 
             return NoContent();
         }

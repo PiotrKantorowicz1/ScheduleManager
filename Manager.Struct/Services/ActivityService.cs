@@ -1,8 +1,10 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Manager.Core.Models;
+using Manager.Core.Queries.Activities;
 using Manager.Core.Repositories;
+using Manager.Core.Types;
 using Manager.Struct.DTO;
 using Manager.Struct.Exceptions;
 
@@ -47,36 +49,68 @@ namespace Manager.Struct.Services
             return activityDetails;
         }
 
-        public async Task<IEnumerable<ActivityDto>> BrowseAsync()
+        public async Task<PagedResult<ActivityDto>> GetAllPageable()
         {
-            var activity = await _activityRepository.GetAllAsync();
-
-            return _mapper.Map<IEnumerable<Activity>, IEnumerable<ActivityDto>>(activity);
+            var activities = await _activityRepository.GetAllPageable();
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(activities);
         }
 
-        public async Task<ActivityDto> CreateAsync(ActivityDto activity)
+        public async Task<PagedResult<ActivityDto>> FilterByCreator(BrowseActivitiesByCreator query)
         {
-            var newActivity = _mapper.Map<ActivityDto, Activity>(activity);
-
-            await _activityRepository.AddAsync(newActivity);
-
-            return _mapper.Map<Activity, ActivityDto>(newActivity);
+            var filtersActivity = await _activityRepository.GetAllPageable(a => a.CreatorId == query.CreatorId, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
         }
 
-        public async Task<ActivityDto> EditAsync(int id)
+        public async Task<PagedResult<ActivityDto>> FilterByTitle(BrowseActivitiesByTitle query)
+        {
+            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Title == query.Title, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+        }
+
+        public async Task<PagedResult<ActivityDto>> FilterByLocation(BrowseActivitiesByLocation query)
+        {
+            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Location == query.Location, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+        }
+
+        public async Task CreateAsync(string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
+            ActivityType type, ActivityPriority priority, ActivityStatus status)
+        {
+            var activity = await _activityRepository.GetByTitleAsync(title);
+            if (activity != null)
+            {
+                throw new ServiceException(ErrorCodes.TaskNotFound,
+                    $"Activity with this {title} already exists.");
+            }
+
+            activity = new Activity(title, description, timestart, timeEnd, location,
+                creatorId, type, priority, status);
+            await _activityRepository.AddAsync(activity);
+        }
+
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
+            int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)
             {
                 throw new ServiceException(ErrorCodes.TaskNotFound,
-                  $"task with this id: {id} not exists.");
+                    $"Activity with this id: {id} not exists.");
             }
 
+            activity.SetTitle(title);
+            activity.SetDescription(description);
+            activity.SetTimeStart(timeStart);
+            activity.SetTimeEnd(timeEnd);
+            activity.SetLocation(location);
+            activity.SetCreator(creatorId);
+            activity.Type = type;
+            activity.Priority = priority;
+            activity.Status = status;
+
             await _activityRepository.UpdateAsync(activity);
-
-            return _mapper.Map<Activity, ActivityDto>(activity);
         }
-
+      
         public async Task DeleteAsync(int id)
         {
             var activity = await _activityRepository.GetAsync(id);
