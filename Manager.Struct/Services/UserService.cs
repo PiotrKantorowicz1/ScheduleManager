@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using Manager.Core.Models;
 using Manager.Core.Repositories;

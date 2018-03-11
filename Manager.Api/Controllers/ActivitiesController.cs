@@ -84,8 +84,7 @@ namespace Manager.Api.Controllers
         [Route("Create")]
         public async Task<IActionResult> Create([FromBody] Activity activity)
         {
-
-            await _activityService.CreateAsync(activity.Title, activity.Description, activity.TimeStart,
+            await _activityService.CreateAsync(activity.Id, activity.Title, activity.Description, activity.TimeStart,
                 activity.TimeEnd, activity.Location,activity.CreatorId, activity.Type, activity.Priority, activity.Status);
 
             return Created($"users/{activity.Title}", null);

@@ -15,7 +15,7 @@ namespace Manager.Struct.Services
         Task<PagedResult<ActivityDto>> FilterByCreator(BrowseActivitiesByCreator query);
         Task<PagedResult<ActivityDto>> FilterByTitle(BrowseActivitiesByTitle query);
         Task<PagedResult<ActivityDto>> FilterByLocation(BrowseActivitiesByLocation query);
-        Task CreateAsync(string title, string description, DateTime timestart, DateTime timeEnd,
+        Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
             string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status);
         Task UpdateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
             string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status);

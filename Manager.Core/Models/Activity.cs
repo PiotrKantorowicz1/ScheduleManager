@@ -108,11 +108,6 @@ namespace Manager.Core.Models
 
         public void SetLocation(string location)
         {
-            if (String.IsNullOrEmpty(location))
-            {
-                throw new DomainException(ErrorCodes.InvalidLocation,
-                    "Location can not be empty.");
-            }
             if (location.Length > 150)
             {
                 throw new DomainException(ErrorCodes.InvalidLocation,

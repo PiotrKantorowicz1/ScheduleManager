@@ -73,10 +73,10 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
         }
 
-        public async Task CreateAsync(string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
             ActivityType type, ActivityPriority priority, ActivityStatus status)
         {
-            var activity = await _activityRepository.GetByTitleAsync(title);
+            var activity = await _activityRepository.GetAsync(id);
             if (activity != null)
             {
                 throw new ServiceException(ErrorCodes.TaskNotFound,

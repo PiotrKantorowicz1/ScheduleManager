@@ -8,5 +8,15 @@ namespace Manager.Core.Models
 
         public int ScheduleId { get; set; }
         public Schedule Schedule { get; set; }
+
+        public Attendee()
+        {          
+        }
+
+        public Attendee(int userId, int scheduleId)
+        {
+            UserId = userId;
+            ScheduleId = scheduleId;
+        }
     }
 }
