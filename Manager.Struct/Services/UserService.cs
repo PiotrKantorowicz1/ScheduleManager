@@ -15,16 +15,14 @@ namespace Manager.Struct.Services
         private readonly IUserRepository _userRepository;
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IAttendeeRepository _attendeeRepository;
-        private readonly ICrypton _crypton;
         private readonly IMapper _mapper;
 
         public UserService(IUserRepository userRepository, IScheduleRepository scheduleRepository,
-            IAttendeeRepository attendeeRepository, ICrypton crypton, IMapper mapper)
+            IAttendeeRepository attendeeRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
             _attendeeRepository = attendeeRepository;
-            _crypton = crypton;
             _mapper = mapper;
         }
 
@@ -64,74 +62,25 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
-        public async Task<bool> FindUserInRoleAsync(int id)
-        {
-            var user = await _userRepository.GetSingleAsync(u => u.Id == id);
-            var userInRole = user.Role != null;
+        //public async Task UpdateUserAsync(int id, string name, string email, string fullName,
+        //    string password, string avatar, string role, string profession)
+        //{
+        //    var user = await _userRepository.GetAsync(id);
+        //    if (user == null)
+        //    {
+        //        throw new ServiceException(ErrorCodes.InvalidName,
+        //            $"User with id: {name} not exists.");
+        //    }
 
-            return userInRole;
-        }
+        //    user.SetName(name);
+        //    user.SetEmail(email);
+        //    user.SetFullName(fullName);
+        //    user.SetAvatar(avatar);
+        //    user.SetRole(role);
+        //    user.SetProfession(profession);          
 
-        public async Task LoginAsync(string email, string password)
-        {
-            var user = await _userRepository.GetAsync(email);
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.InvalidCredentials,
-                    "Invalid credentials");
-            }
-
-            var hash = _crypton.GetHash(password, user.Salt);
-            if (user.Password == hash)
-            {
-                return;
-            }
-            throw new ServiceException(ErrorCodes.InvalidCredentials,
-                "Invalid credentials");
-        }
-
-        public async Task<UserDto> RegisterAsync(string name, string email, string fullName,
-            string password,string avatar, string role, string profession)
-        {
-            var user = await _userRepository.GetAsync(name);
-
-            if (user != null)
-            {
-                throw new ServiceException(ErrorCodes.NameInUse,
-                    $"User with name: '{user.Name}' already exists.");
-            }
-
-            var salt = _crypton.GetSalt(password);
-            var hash = _crypton.GetHash(password, salt);
-
-            user = new User(name, email, fullName, hash, avatar, role, salt, profession);
-            await _userRepository.AddAsync(user);
-
-            return _mapper.Map<User, UserDto>(user);
-        }
-
-        public async Task UpdateUserAsync(int id, string name, string email, string fullName,
-            string password, string avatar, string role, string profession)
-        {
-            var user = await _userRepository.GetAsync(id);
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.InvalidName,
-                    $"User with id: {name} not exists.");
-            }
-
-            var salt = _crypton.GetSalt(password);
-
-            user.SetName(name);
-            user.SetEmail(email);
-            user.SetFullName(fullName);
-            user.SetPassword(password, salt);
-            user.SetAvatar(avatar);
-            user.SetRole(role);
-            user.SetProfession(profession);          
-
-            await _userRepository.UpdateAsync(user);
-        }      
+        //    await _userRepository.UpdateAsync(user);
+        //}      
 
         public async Task RemoveUserScheduleAsync(int id)
         {

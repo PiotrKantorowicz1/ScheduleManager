@@ -14,12 +14,8 @@ namespace Manager.Struct.Services
         Task<PagedResult<UserDto>> BrowseAsync();
         Task<PagedResult<UserDto>> BrowseByProfessionAsync(BrowseUsersByProfession query);
         Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query);
-        Task<bool> FindUserInRoleAsync(int id);
-        Task LoginAsync(string email, string password);
-        Task<UserDto> RegisterAsync(string name, string email, string fullName,
-            string password,string avatar, string role, string profession);
-        Task UpdateUserAsync(int id, string name, string email, string fullName,
-            string password, string avatar, string role, string profession);
+        //Task UpdateUserAsync(int id, string name, string email, string fullName,
+        //    string password, string avatar, string role, string profession);
         Task RemoveUserScheduleAsync(int id);
         Task RemoveUserAttendeeAsync(int id);
         Task RemoveUserAsync(int id);

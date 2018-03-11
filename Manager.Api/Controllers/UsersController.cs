@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
-using Manager.Core.Models;
 using Manager.Core.Queries.Users;
 
 namespace Manager.Api.Controllers
@@ -57,25 +56,25 @@ namespace Manager.Api.Controllers
             return Json(user);
         }
 
-        [HttpPost]
-        [Route("Register")]
-        public async Task<IActionResult> Register([FromBody]User user)
-        {
-            await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
-                user.Password, user.Avatar, user.Role, user.Profession);
+        //[HttpPost]
+        //[Route("Register")]
+        //public async Task<IActionResult> Register([FromBody]User user)
+        //{
+        //    await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
+        //        user.Password, user.Avatar, user.Role, user.Profession);
 
-            return Created($"users/{user.Email}", null);
-        }
+        //    return Created($"users/{user.Email}", null);
+        //}
 
-        [HttpPut]
-        [Route("Update/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]User user)
-        {
-            await _userService.UpdateUserAsync(id, user.Name, user.Email, user.FullName,
-                user.Password, user.Avatar, user.Role, user.Profession);
+        //[HttpPut]
+        //[Route("Update/{id}")]
+        //public async Task<IActionResult> Put(int id, [FromBody]User user)
+        //{
+        //    await _userService.UpdateUserAsync(id, user.Name, user.Email, user.FullName,
+        //        user.Password, user.Avatar, user.Role, user.Profession);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         [HttpDelete]
         [Route("Remove/{id}")]

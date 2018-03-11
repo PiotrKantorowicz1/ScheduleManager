@@ -8,7 +8,7 @@ namespace Manager.Struct.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = typeof(SqlModule)
+            var assembly = typeof(DomainModule)
                 .GetTypeInfo()
                 .Assembly;
 

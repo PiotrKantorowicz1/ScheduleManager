@@ -107,7 +107,7 @@ namespace Manager.Struct.Services
         public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
             int creatorId, ScheduleType type, ScheduleStatus status)
         {
-            var schedule = await _scheduleRepository.GetByAsync(id);
+            var schedule = await _scheduleRepository.GetAsync(id);
             if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
@@ -123,7 +123,7 @@ namespace Manager.Struct.Services
             schedule.Type = type;
             schedule.Status = status;
 
-            await _scheduleRepository.AddAsync(schedule);
+            await _scheduleRepository.UpdateAsync(schedule);
 
             _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
 
@@ -135,7 +135,7 @@ namespace Manager.Struct.Services
 
         public async Task DeleteAsync(int id)
         {
-            var schedule = await _scheduleRepository.GetByAsync(id);
+            var schedule = await _scheduleRepository.GetAsync(id);
             if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,

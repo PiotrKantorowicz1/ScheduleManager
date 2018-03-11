@@ -16,5 +16,8 @@ namespace Manager.Struct.Repositories
 
         public async Task<User> GetAsync(string name)
             => await GetSingleAsync(u => u.Name == name);
+
+        public async Task<User> GetByEmailAsync(string email)
+            => await GetSingleAsync(u => u.Email == email);
     }
 }

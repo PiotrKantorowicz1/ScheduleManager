@@ -1,10 +1,10 @@
 ﻿namespace Manager.Core.Models
 {
-    public class Roles
+    public static class Roles
     {
-        public static string User => "user";
-        public static string Admin => "admin";
-        public static string Editor => "editor";
-        public static string Contractor => "contractor";
+        public const string User = "user";
+        public const string Admin = "admin";
+        public const string Editor = "editor";
+        public const string Contractor = "contractor";
     }
 }

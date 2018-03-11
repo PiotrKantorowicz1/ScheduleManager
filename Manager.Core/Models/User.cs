@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Manager.Core.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Manager.Core.Models
 {
@@ -9,20 +10,12 @@ namespace Manager.Core.Models
     {
         private static readonly Regex NameRegex = new Regex("^(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._.-]+(?<![_.-])$");
 
-        public User()
-        {
-            SchedulesCreated = new List<Schedule>();
-            SchedulesAttended = new List<Attendee>();
-            ActivityCreated = new List<Activity>();
-        }
-
         public int Id { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
         public string Password { get; set; }
-        public string Salt { get; set; }
         public string Avatar { get; set; }
         public string Profession { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -32,17 +25,24 @@ namespace Manager.Core.Models
         public ICollection<Schedule> SchedulesCreated { get; set; }
         public ICollection<Attendee> SchedulesAttended { get; set; }
 
-        public User(string name, string email, string fullName, 
-            string password,string avatar, string role, string salt, string profession)
+        public User()
+        {
+            SchedulesCreated = new List<Schedule>();
+            SchedulesAttended = new List<Attendee>();
+            ActivityCreated = new List<Activity>();
+        }
+
+        public User(string name, string email, string fullName, string avatar,
+            string role, string profession)
         {
             SetName(name);
             SetFullName(fullName);
-            SetPassword(password, salt);
             SetEmail(email);
             SetRole(role);
             SetAvatar(avatar);
             SetProfession(profession);
             CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetName(string username)
@@ -107,38 +107,6 @@ namespace Manager.Core.Models
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void SetPassword(string password, string salt)
-        {
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Password can not be empty.");
-            }
-            if (string.IsNullOrWhiteSpace(salt))
-            {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Salt can not be empty.");
-            }
-            if (password.Length < 4)
-            {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Password must contain at least 4 characters.");
-            }
-            if (password.Length > 100)
-            {
-                throw new DomainException(ErrorCodes.InvalidPassword,
-                    "Password can not contain more than 100 characters.");
-            }
-            if (Password == password)
-            {
-                return;
-            }
-
-            Password = password;
-            Salt = salt;
-            UpdatedAt = DateTime.UtcNow;
-        }
-
         public void SetAvatar(string avatar)
         {
             if (string.IsNullOrEmpty(avatar))
@@ -163,10 +131,24 @@ namespace Manager.Core.Models
                 throw new DomainException(ErrorCodes.InvaliProfession,
                     "Profession field cannot be longer than 100 characters.");
             }
-
+             
             Profession = profession;
             UpdatedAt = DateTime.UtcNow;
         }
+
+        public void SetPassword(string password, IPasswordHasher<User> passwordHasher)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new DomainException(ErrorCodes.InvalidPassword,
+                    "Password can not be empty.");
+            }
+
+            Password = passwordHasher.HashPassword(this, password);
+        }
+
+        public bool ValidatePassword(string password, IPasswordHasher<User> passwordHasher)
+            => passwordHasher.VerifyHashedPassword(this, Password, password) != PasswordVerificationResult.Failed;
 
     }
 }
