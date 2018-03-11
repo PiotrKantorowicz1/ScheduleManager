@@ -49,28 +49,28 @@ namespace Manager.Struct.Services
             return activityDetails;
         }
 
-        public async Task<PagedResult<ActivityDto>> GetAllPageable()
+        public async Task<PagedResult<ActivityDto>> BrowseAsync()
         {
             var activities = await _activityRepository.GetAllPageable();
             return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(activities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByCreator(BrowseActivitiesByCreator query)
+        public async Task<PagedResult<ActivityDto>> BrowseByCreatorAsync(BrowseActivitiesByCreator query)
         {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.CreatorId == query.CreatorId, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+            var filtersActivities = await _activityRepository.GetAllPageable(a => a.CreatorId == query.CreatorId, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByTitle(BrowseActivitiesByTitle query)
+        public async Task<PagedResult<ActivityDto>> BrowseByTitleAsync(BrowseActivitiesByTitle query)
         {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Title == query.Title, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+            var filtersActivities = await _activityRepository.GetAllPageable(a => a.Title == query.Title, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByLocation(BrowseActivitiesByLocation query)
+        public async Task<PagedResult<ActivityDto>> BrowseByLocationAsync(BrowseActivitiesByLocation query)
         {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Location == query.Location, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+            var filtersActivities = await _activityRepository.GetAllPageable(a => a.Location == query.Location, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,

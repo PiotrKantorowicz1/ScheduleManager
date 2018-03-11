@@ -28,7 +28,7 @@ namespace Manager.Struct.Services
 
         public async Task SeedAsync()
         {
-            var users = await _userService.BrowseUsersAsync();
+            var users = await _userService.GetAllAsync();
 
             if (users.Any())
             {

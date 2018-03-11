@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
-using Manager.Struct.DTO;
+using Manager.Core.Models;
+using Manager.Core.Queries.Schedules;
 
 namespace Manager.Api.Controllers
 {
@@ -15,14 +16,44 @@ namespace Manager.Api.Controllers
             _scheduleSerivce = scheduleSerivce;
         }
 
+        [HttpGet]
+        [Route("GetAllPageable")]
         public async Task<IActionResult> Get()
         {
-            var schedules = await _scheduleSerivce.BrowseAsync();
+            var activity = await _scheduleSerivce.BrowseAsync();
 
-            return Json(schedules);
+            return Json(activity);
         }
 
-        [HttpGet("{id}", Name = "GetSchedule")]
+        [HttpGet]
+        [Route("FilterByCreator/{creatorId}")]
+        public async Task<IActionResult> Get(BrowseSchedulesByCreator query)
+        {
+            var users = await _scheduleSerivce.BrowseByCreatorAsync(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByTitle/{title}")]
+        public async Task<IActionResult> Get(BrowseSchedulesByTitle query)
+        {
+            var users = await _scheduleSerivce.BrowseByTitleAsync(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("FilterByLocation/{location}")]
+        public async Task<IActionResult> Get(BrowseSchedulesByLocation query)
+        {
+            var users = await _scheduleSerivce.BrowseByLocationAsync(query);
+
+            return Json(users);
+        }
+
+        [HttpGet]
+        [Route("Get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var schedule = await _scheduleSerivce.GetAsync(id);
@@ -35,7 +66,8 @@ namespace Manager.Api.Controllers
             return Json(schedule);
         }
 
-        [HttpGet("{id}/details", Name = "GetScheduleDetails")]
+        [HttpGet]
+        [Route("{id}/Details")]
         public async Task<IActionResult> GetScheduleDetails(int id)
         {
             var scheduleDetails = await _scheduleSerivce.GetScheduleDetailsAsync(id);
@@ -49,44 +81,37 @@ namespace Manager.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ScheduleDto schedule)
+        public async Task<IActionResult> Create(Schedule schedule)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            await _scheduleSerivce.CreateAsync(schedule.Id, schedule.Title, schedule.Description, schedule.TimeStart, 
+                schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
 
-            var newSchedule = await _scheduleSerivce.CreateAsync(schedule);
-
-            return Json(newSchedule);
+            return Created($"users/{schedule.Title}", null);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id)
+        public async Task<IActionResult> Put(int id, Schedule schedule)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _scheduleSerivce.EditAsync(id);
+            await _scheduleSerivce.UpdateAsync(id, schedule.Title, schedule.Description, schedule.TimeStart,
+                schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
 
             return NoContent();
         }
 
-        [HttpDelete("{id}", Name = "RemoveSchedule")]
+        [HttpDelete]
+        [Route("Remove/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _scheduleSerivce.DeleteAsync(id);
 
             return NoContent();
-
         }
 
-        [HttpDelete("{id}/removeattendee/{attendee}")]
-        public async Task<IActionResult> Delete(int id, int attendee)
+        [HttpDelete]
+        [Route("Remove/{id}/Attendee/{id}")]
+        public async Task<IActionResult> Delete(int id, int attendeeId)
         {
-            await _scheduleSerivce.DeleteAttendeesAsync(id, attendee);
+            await _scheduleSerivce.DeleteAttendeesAsync(id, attendeeId);
 
             return NoContent();
 

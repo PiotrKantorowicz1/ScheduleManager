@@ -1,5 +1,8 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
+using Manager.Core.Models;
+using Manager.Core.Queries.Schedules;
+using Manager.Core.Types;
 using Manager.Struct.DTO;
 
 namespace Manager.Struct.Services
@@ -8,11 +11,15 @@ namespace Manager.Struct.Services
     {
         Task<ScheduleDto> GetAsync(int id);
         Task<ScheduleDetailsDto> GetScheduleDetailsAsync(int id);
-        Task<IEnumerable<ScheduleDto>> BrowseAsync();
-        Task<IEnumerable<ScheduleDto>> GetSchedulesAsync(int id);
-        Task<ScheduleDto> CreateAsync(ScheduleDto schedule);
-        Task<ScheduleDto> EditAsync(int id);
+        Task<PagedResult<ScheduleDto>> BrowseAsync();
+        Task<PagedResult<ScheduleDto>> BrowseByCreatorAsync(BrowseSchedulesByCreator query);
+        Task<PagedResult<ScheduleDto>> BrowseByTitleAsync(BrowseSchedulesByTitle query);
+        Task<PagedResult<ScheduleDto>> BrowseByLocationAsync(BrowseSchedulesByLocation query);
+        Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
+            string location, int creatorId, ScheduleType type, ScheduleStatus status);
+        Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,
+            string location, int creatorId, ScheduleType type, ScheduleStatus status);
         Task DeleteAsync(int id);
-        Task DeleteAttendeesAsync(int id, int attendee);
+        Task DeleteAttendeesAsync(int id, int attendeeId);
     }
 }

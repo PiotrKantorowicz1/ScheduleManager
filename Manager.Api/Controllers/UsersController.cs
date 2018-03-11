@@ -10,19 +10,17 @@ namespace Manager.Api.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IScheduleService _scheduleService;
 
-        public UsersController(IUserService userService, IScheduleService scheduleService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _scheduleService = scheduleService;
         }
 
         [HttpGet]
         [Route("GetAllPageable")]
         public async Task<IActionResult> Get()
         {
-            var users = await _userService.GetAllPegeable();
+            var users = await _userService.BrowseAsync();
 
             return Json(users);
         }
@@ -31,7 +29,7 @@ namespace Manager.Api.Controllers
         [Route("FilterByProfession/{profession}")]
         public async Task<IActionResult> Get(BrowseUsersByProfession query)
         {
-            var users = await _userService.FilterByProfession(query);
+            var users = await _userService.BrowseByProfessionAsync(query);
 
             return Json(users);
         }
@@ -40,7 +38,7 @@ namespace Manager.Api.Controllers
         [Route("FilterByRole/{role}")]
         public async Task<IActionResult> Get(BrowseUsersByRole query)
         {
-            var users = await _userService.FilterByRole(query);
+            var users = await _userService.BrowseByRoleAsync(query);
 
             return Json(users);
         }
@@ -57,20 +55,6 @@ namespace Manager.Api.Controllers
             }
 
             return Json(user);
-        }
-
-        [HttpGet]
-        [Route("{id}/Schedules")]
-        public async Task<IActionResult> GetSchedulesAsync(int id)
-        {
-            var userSchedules = await _scheduleService.GetSchedulesAsync(id);
-
-            if (userSchedules == null)
-            {
-                NotFound();
-            }
-
-            return Json(userSchedules);
         }
 
         [HttpPost]

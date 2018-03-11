@@ -20,7 +20,7 @@ namespace Manager.Api.Controllers
         [Route("GetAllPageable")]
         public async Task<IActionResult> Get()
         {
-            var activity = await _activityService.GetAllPageable();
+            var activity = await _activityService.BrowseAsync();
 
             return Json(activity);
         }
@@ -29,7 +29,7 @@ namespace Manager.Api.Controllers
         [Route("FilterByCreator/{creatorId}")]
         public async Task<IActionResult> Get(BrowseActivitiesByCreator query)
         {
-            var users = await _activityService.FilterByCreator(query);
+            var users = await _activityService.BrowseByCreatorAsync(query);
 
             return Json(users);
         }
@@ -38,7 +38,7 @@ namespace Manager.Api.Controllers
         [Route("FilterByTitle/{title}")]
         public async Task<IActionResult> Get(BrowseActivitiesByTitle query)
         {
-            var users = await _activityService.FilterByTitle(query);
+            var users = await _activityService.BrowseByTitleAsync(query);
 
             return Json(users);
         }
@@ -47,7 +47,7 @@ namespace Manager.Api.Controllers
         [Route("FilterByLocation/{location}")]
         public async Task<IActionResult> Get(BrowseActivitiesByLocation query)
         {
-            var users = await _activityService.FilterByLocation(query);
+            var users = await _activityService.BrowseByLocationAsync(query);
 
             return Json(users);
         }
