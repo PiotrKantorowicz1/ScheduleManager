@@ -81,7 +81,8 @@ namespace Manager.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Schedule schedule)
+        [Route("Create")]
+        public async Task<IActionResult> Create([FromBody]Schedule schedule)
         {
             await _scheduleSerivce.CreateAsync(schedule.Id, schedule.Title, schedule.Description, schedule.TimeStart, 
                 schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
@@ -89,8 +90,9 @@ namespace Manager.Api.Controllers
             return Created($"users/{schedule.Title}", null);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Schedule schedule)
+        [HttpPut]
+        [Route("Update/{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]Schedule schedule)
         {
             await _scheduleSerivce.UpdateAsync(id, schedule.Title, schedule.Description, schedule.TimeStart,
                 schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
@@ -108,7 +110,7 @@ namespace Manager.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("Remove/{id}/Attendee/{id}")]
+        [Route("Remove/{ScheduleId}/Attendee/{AttendeeId}")]
         public async Task<IActionResult> Delete(int id, int attendeeId)
         {
             await _scheduleSerivce.DeleteAttendeesAsync(id, attendeeId);

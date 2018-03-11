@@ -7,11 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Manager.Struct.EF;
+using Manager.Struct.Extensions;
 using Manager.Struct.IoC;
 using Manager.Struct.Services;
 using Manager.Struct.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 
@@ -37,8 +39,8 @@ namespace Manager.Api
 
             services.AddCors();
 
-            services.AddMvc()
-                .AddJsonOptions(x => x.SerializerSettings.Formatting = Formatting.Indented);
+            services.AddMvc().AddDefaultJsonOptions();
+
 
             var builder = new ContainerBuilder();
             builder.Populate(services);

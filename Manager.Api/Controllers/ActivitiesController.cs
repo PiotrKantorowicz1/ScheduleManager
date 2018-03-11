@@ -82,7 +82,7 @@ namespace Manager.Api.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create([FromBody] Activity activity)
+        public async Task<IActionResult> Create([FromBody]Activity activity)
         {
             await _activityService.CreateAsync(activity.Id, activity.Title, activity.Description, activity.TimeStart,
                 activity.TimeEnd, activity.Location,activity.CreatorId, activity.Type, activity.Priority, activity.Status);
@@ -92,7 +92,7 @@ namespace Manager.Api.Controllers
 
         [HttpPut]
         [Route("Update/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Activity activity)
+        public async Task<IActionResult> Put(int id, [FromBody]Activity activity)
         { 
             await _activityService.UpdateAsync(id, activity.Title, activity.Description, activity.TimeStart, activity.TimeEnd,
                 activity.Location, activity.CreatorId, activity.Type, activity.Priority, activity.Status);

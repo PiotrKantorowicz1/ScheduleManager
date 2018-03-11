@@ -87,7 +87,7 @@ namespace Manager.Struct.Services
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location,
             int creatorId, ScheduleType type, ScheduleStatus status)
         {
-            var schedule = await _scheduleRepository.GetAsync(id);
+            var schedule = await _scheduleRepository.GetByAsync(id);
             if (schedule != null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
@@ -100,7 +100,7 @@ namespace Manager.Struct.Services
 
             foreach (var attendee in schedule.Attendees)
             {
-                schedule.Attendees.Add(attendee);
+                schedule.Attendees.Add(new Attendee(schedule.Id, attendee.Id));
             }
         }
 
@@ -111,7 +111,7 @@ namespace Manager.Struct.Services
             if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
-                    $"schedule with this id: {id} not exists.");
+                    $"Schedule with this id: {id} not exists.");
             }
 
             schedule.SetTitle(title);
@@ -125,9 +125,11 @@ namespace Manager.Struct.Services
 
             await _scheduleRepository.AddAsync(schedule);
 
+            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
+
             foreach (var attendee in schedule.Attendees)
             {
-                await _attendeeRepository.AddAsync(attendee);
+                await _attendeeRepository.AddAsync(new Attendee(id, attendee.Id));
             }
         }
 
