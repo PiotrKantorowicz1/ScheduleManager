@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Manager.Core.Models;
 using Manager.Struct.Services;
 using Microsoft.AspNetCore.Mvc;
 

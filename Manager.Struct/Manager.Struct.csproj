@@ -39,9 +39,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Accounts\" />
+    <Folder Include="Commands\Activities\" />
+    <Folder Include="Commands\Schedules\" />
     <Folder Include="Commands\Users\" />
-    <Folder Include="Handlers\Accounts\" />
     <Folder Include="Handlers\Users\" />
   </ItemGroup>
 
