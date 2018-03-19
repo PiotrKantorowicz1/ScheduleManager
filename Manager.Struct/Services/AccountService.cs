@@ -48,6 +48,7 @@ namespace Manager.Struct.Services
             var refreshToken = new RefreshToken(user, _passwordHasher);
             var jwt = _jwtHandler.CreateToken(user.Id, user.Role);
             jwt.RefreshToken = refreshToken.Token;
+            await _refreshTokenRepository.AddAsync(refreshToken);
 
             return jwt;
         }

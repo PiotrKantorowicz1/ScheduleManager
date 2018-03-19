@@ -5,16 +5,16 @@ using Manager.Struct.Services;
 
 namespace Manager.Struct.Handlers.Accounts
 {
-    public class ChangeUserPasswordHandler : ICommandHandler<ChangeUserPassword>
+    public class ChangePasswordHandler : ICommandHandler<ChangePassword>
     {
         private readonly IAccountService _accountService;
 
-        public ChangeUserPasswordHandler(IAccountService accountService)
+        public ChangePasswordHandler(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
-        public async Task HandleAsync(ChangeUserPassword command)
+        public async Task HandleAsync(ChangePassword command)
         {
             await _accountService.ChangePasswordAsync(command.UserId, 
                 command.CurrentPassword, command.NewPassword);
