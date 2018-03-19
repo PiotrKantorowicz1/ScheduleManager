@@ -8,6 +8,7 @@ namespace Manager.Core.Models
     {
         public Guid Id { get; protected set; }
         public int UserId { get; protected set; }
+        public User User { get; protected set; }
         public string Token { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public DateTime? RevokedAt { get; protected set; }

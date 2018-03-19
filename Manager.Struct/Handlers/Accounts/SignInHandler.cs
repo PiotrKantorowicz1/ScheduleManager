@@ -16,8 +16,7 @@ namespace Manager.Struct.Handlers.Accounts
 
         public async Task HandleAsync(SignIn command)
         {
-            await _accountService.SignUpAsync(command.Name, command.FullName, command.Email,
-                command.Password, command.Avatar, command.Profession, command.Role);
+            await _accountService.SignInAsync(command.Email, command.Password);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Manager.Struct.Commands.Accounts;
 using Manager.Struct.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +18,8 @@ namespace Manager.Api.Controllers
             _refreshTokenService = refreshTokenService;
         }
 
-        [HttpPost("sign-in/{email}/{password}")]
-        public async Task<IActionResult> SignIn(string email, string password)
-            => Ok(await _accounteService.SignInAsync(email, password));
+        [HttpPost("sign-in")]
+        public async Task<IActionResult> SignIn([FromBody] SignIn command)
+            => Ok(await _accounteService.SignInAsync(command.Email, command.Password));
     }
 }

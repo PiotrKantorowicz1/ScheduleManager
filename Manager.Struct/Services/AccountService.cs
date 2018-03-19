@@ -39,7 +39,7 @@ namespace Manager.Struct.Services
 
         public async Task<JsonWebToken> SignInAsync(string email, string password)
         {
-            var user = await _userRepository.GetAsync(email);
+            var user = await _userRepository.GetByEmailAsync(email);
             if (user == null || !user.ValidatePassword(password, _passwordHasher))
             {
                 throw new ServiceException(ErrorCodes.InvalidCredentials,

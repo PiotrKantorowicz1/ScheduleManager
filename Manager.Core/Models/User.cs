@@ -8,7 +8,10 @@ namespace Manager.Core.Models
 {
     public class User
     {
-        private static readonly Regex NameRegex = new Regex("^(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._.-]+(?<![_.-])$");
+        private static readonly Regex EmailRegex = new Regex(
+            @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+            @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,12 +27,14 @@ namespace Manager.Core.Models
         public ICollection<Activity> ActivityCreated { get; set; }
         public ICollection<Schedule> SchedulesCreated { get; set; }
         public ICollection<Attendee> SchedulesAttended { get; set; }
+        public ICollection<RefreshToken> Tokens { get; set; }
 
         public User()
         {
             SchedulesCreated = new List<Schedule>();
             SchedulesAttended = new List<Attendee>();
             ActivityCreated = new List<Activity>();
+            Tokens = new List<RefreshToken>();
         }
 
         public User(string name, string email, string fullName, string avatar,
@@ -47,16 +52,15 @@ namespace Manager.Core.Models
 
         public void SetName(string username)
         {
-            if (!NameRegex.IsMatch(username))
-            {
-                throw new DomainException(ErrorCodes.InvalidUsername,
-                    "Username is invalid.");
-            }
-
             if (String.IsNullOrEmpty(username))
             {
                 throw new DomainException(ErrorCodes.InvalidUsername,
                     "Username is invalid.");
+            }
+            if (username.Length > 50)
+            {
+                throw new DomainException(ErrorCodes.InvalidUsername,
+                    "Usename cannot be longer than 50 characters");
             }
 
             Name = username.ToLowerInvariant();
@@ -82,6 +86,11 @@ namespace Manager.Core.Models
                 throw new DomainException(ErrorCodes.InvalidEmail,
                     "Email can not be empty.");
             }
+            if (!EmailRegex.IsMatch(email))
+            {
+                throw new DomainException(ErrorCodes.InvalidEmail,
+                    $"Invalid email '{email}'.");
+            }
             if (Email == email)
             {
                 return;
@@ -93,14 +102,10 @@ namespace Manager.Core.Models
 
         public void SetRole(string role)
         {
-            if (string.IsNullOrWhiteSpace(role))
+            if (!Models.Roles.IsValid(role))
             {
                 throw new DomainException(ErrorCodes.InvalidRole,
-                    "Role can not be empty.");
-            }
-            if (Role == role)
-            {
-                return;
+                    $"Invalid role: '{role}'.");
             }
 
             Role = role;
@@ -131,7 +136,7 @@ namespace Manager.Core.Models
                 throw new DomainException(ErrorCodes.InvaliProfession,
                     "Profession field cannot be longer than 100 characters.");
             }
-             
+
             Profession = profession;
             UpdatedAt = DateTime.UtcNow;
         }

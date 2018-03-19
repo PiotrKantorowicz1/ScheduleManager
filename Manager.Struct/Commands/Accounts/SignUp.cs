@@ -1,6 +1,6 @@
 ﻿namespace Manager.Struct.Commands.Accounts
 {
-    public class SignIn : ICommand
+    public class SignUp : ICommand
     {
         public string Name { get; set; }
         public string FullName { get; set; }

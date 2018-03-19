@@ -13,15 +13,17 @@ namespace Manager.Struct.Services
     public class DataRefiller : IDataRefiller
     {
         private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IActivityRepository _activityRepository;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
-        public DataRefiller(IUserService userService, IScheduleRepository scheduleRepository,
-            IActivityRepository activityRepository)
+        public DataRefiller(IUserService userService, IAccountService accountService, 
+        IScheduleRepository scheduleRepository, IActivityRepository activityRepository)
         {
             _userService = userService;
+            _accountService = accountService;
             _scheduleRepository = scheduleRepository;
             _activityRepository = activityRepository;
         }
@@ -39,18 +41,18 @@ namespace Manager.Struct.Services
           
             Logger.Trace("Initializing data ...");
 
-            //var user1 = await _userService.RegisterAsync("PiotrK", "piotr@gmail.com", "PiotrKantorowicz", "secret", "avatar_02.png", "admin", "Developer");
-            //Logger.Trace($"Adding user: '{user1}'.");
-            //var user2 = await _userService.RegisterAsync("SandraS", "sandra@gmail.com" , "Sandra Sernik", "secret", "avatar_03.jpg", "editor", "Web Designer");
-            //Logger.Trace($"Adding user: '{user2}'.");
-            //var user3 = await _userService.RegisterAsync("JanuszC", "janusz@gmail.com", "Janusz Cieslak", "secret", "avatar_03.jpg", "editor", "Quality Assurance");
-            //Logger.Trace($"Adding user: '{user3}'.");
-            //var user4 = await _userService.RegisterAsync("Vorek", "vortek@gmail.com", "Vorek Vox", "secret", "avatar_04.jpg", "user", "Developer");
-            //Logger.Trace($"Adding user: '{user4}'.");
-            //var user5 = await _userService.RegisterAsync("Artur", "artur@gmail.com", "Artut Kupczak", "secret", "avatar_04.jpg", "user", "kasztan");
-            //Logger.Trace($"Adding user: '{user5}'.");
-            //var user6 = await _userService.RegisterAsync("Kamil", "kamil@gmail.com", "Kamil Kuczkeos", "secret", "avatar_01.png", "contractor", "Web Designer");
-            //Logger.Trace($"Adding user: '{user6}'.");
+            await _accountService.SignUpAsync("PiotrK", "PiotrKantorowicz", "piotr@gmail.com", "secret", "avatar_02.png", "Developer", "admin");
+            Logger.Trace($"Adding user: 1");
+            await _accountService.SignUpAsync("SandraS", "Sandra Sernik", "sandra@gmail.com" , "secret", "avatar_03.jpg", "Web Designer", "editor");
+            Logger.Trace($"Adding user: 2");
+            await _accountService.SignUpAsync("JanuszC", "Janusz Cieslak", "janusz@gmail.com", "secret", "avatar_03.jpg", "Quality Assurance", "editor");
+            Logger.Trace($"Adding user: 3");
+            await _accountService.SignUpAsync("Vorek", "Vorek Vox", "vortek@gmail.com", "secret", "avatar_04.jpg", "Developer", "user");
+            Logger.Trace($"Adding user: 4");
+            await _accountService.SignUpAsync("Artur", "Artut Kupczak", "artur@gmail.com", "secret", "avatar_04.jpg", "kasztan", "user");
+            Logger.Trace($"Adding user: 8");
+            await _accountService.SignUpAsync("Kamil", "Kamil Kuczkeos", "kamil@gmail.com", "secret", "avatar_01.png", "Web Designer", "user");
+            Logger.Trace($"Adding user: 6.");
 
             for (var i = 1; i <= 300; i++)
             {
