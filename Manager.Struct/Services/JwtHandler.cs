@@ -35,13 +35,13 @@ namespace Manager.Struct.Services
             };
         }
 
-        public JsonWebToken CreateToken(int userId, string role)
+        public JsonWebToken CreateToken(Guid serialNumber, string role)
         {
             var now = DateTime.UtcNow;
             var claims = new Claim[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, serialNumber.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, serialNumber.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToTimestamp().ToString()),
                 new Claim(ClaimTypes.Role, role)

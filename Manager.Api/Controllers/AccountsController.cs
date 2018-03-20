@@ -1,32 +1,36 @@
 ﻿using System.Threading.Tasks;
+using Manager.Struct.Commands;
 using Manager.Struct.Commands.Accounts;
 using Manager.Struct.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Manager.Api.Controllers
 {
-    [Route("api/[Controller]")]
-    public class AccountsController : Controller
+    public class AccountsController : BaseController
     {
         private readonly IAccountService _accounteService;
         private readonly IRefreshTokenService _refreshTokenService;
 
         public AccountsController(IAccountService accounteService,
-            IRefreshTokenService refreshTokenService)
+            IRefreshTokenService refreshTokenService,
+            ICommandDispatcher commandDispatcher)
+            : base(commandDispatcher)
         {
             _accounteService = accounteService;
             _refreshTokenService = refreshTokenService;
         }
 
+        [AllowAnonymous]
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUp([FromBody] SignUp command)
         { 
-            await _accounteService.SignUpAsync(command.Name, command.FullName, command.Email, 
-                command.Password, command.Avatar, command.Profession, command.Role);
+            await DispatchAsync(command);
 
-            return NoContent();
+            return Created($"users/'{command.Email}'", null);
         }
 
+        [AllowAnonymous]
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn([FromBody] SignIn command)
             => Ok(await _accounteService.SignInAsync(command.Email, command.Password));
@@ -35,20 +39,20 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> RefreshToken(string refreshToken)
             => Ok(await _refreshTokenService.CreateAccessTokenAsync(refreshToken));
 
-        [HttpPost("ChangePassword")]
+        [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword command)
         {
-            await _accounteService.ChangePasswordAsync(command.UserId, command.CurrentPassword, command.NewPassword);
+            await DispatchAsync(command);
             
-            return NoContent();
+            return Content($"Password from user with id: '{command.UserId}' was changed successfully.");
         }
 
         [HttpPost("Revoke")]
         public async Task<IActionResult> Revoke([FromBody] Revoke command)
         {
-            await _refreshTokenService.RevokeAsync(command.RefreshToken, command.UserId);
+            await DispatchAsync(command);
             
-            return NoContent();
+            return Content($"Successfully logout user with id: '{command.UserId}'");
         }
     }
 }

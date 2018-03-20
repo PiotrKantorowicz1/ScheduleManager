@@ -19,6 +19,7 @@ namespace Manager.Struct.IoC
             builder.RegisterInstance(AutoMapperConfig.Initialize())
                    .SingleInstance();
             builder.RegisterModule<RepositoryModule>();
+            builder.RegisterModule<CommandModule>();
             builder.RegisterModule<ServiceModule>();
             builder.RegisterModule<SqlModule>();
             builder.RegisterModule<DomainModule>();

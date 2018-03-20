@@ -41,17 +41,17 @@ namespace Manager.Struct.Services
           
             Logger.Trace("Initializing data ...");
 
-            await _accountService.SignUpAsync("PiotrK", "PiotrKantorowicz", "piotr@gmail.com", "secret", "avatar_02.png", "Developer", "admin");
+            await _accountService.SignUpAsync(Guid.NewGuid(),"PiotrK", "PiotrKantorowicz", "piotr@gmail.com", "secret", "avatar_02.png", "Developer", "admin");
             Logger.Trace($"Adding user: 1");
-            await _accountService.SignUpAsync("SandraS", "Sandra Sernik", "sandra@gmail.com" , "secret", "avatar_03.jpg", "Web Designer", "editor");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "SandraS", "Sandra Sernik", "sandra@gmail.com" , "secret", "avatar_03.jpg", "Web Designer", "editor");
             Logger.Trace($"Adding user: 2");
-            await _accountService.SignUpAsync("JanuszC", "Janusz Cieslak", "janusz@gmail.com", "secret", "avatar_03.jpg", "Quality Assurance", "editor");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "JanuszC", "Janusz Cieslak", "janusz@gmail.com", "secret", "avatar_03.jpg", "Quality Assurance", "editor");
             Logger.Trace($"Adding user: 3");
-            await _accountService.SignUpAsync("Vorek", "Vorek Vox", "vortek@gmail.com", "secret", "avatar_04.jpg", "Developer", "user");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Vorek", "Vorek Vox", "vortek@gmail.com", "secret", "avatar_04.jpg", "Developer", "user");
             Logger.Trace($"Adding user: 4");
-            await _accountService.SignUpAsync("Artur", "Artut Kupczak", "artur@gmail.com", "secret", "avatar_04.jpg", "kasztan", "user");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Artur", "Artut Kupczak", "artur@gmail.com", "secret", "avatar_04.jpg", "kasztan", "user");
             Logger.Trace($"Adding user: 8");
-            await _accountService.SignUpAsync("Kamil", "Kamil Kuczkeos", "kamil@gmail.com", "secret", "avatar_01.png", "Web Designer", "user");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Kamil", "Kamil Kuczkeos", "kamil@gmail.com", "secret", "avatar_01.png", "Web Designer", "user");
             Logger.Trace($"Adding user: 6.");
 
             for (var i = 1; i <= 300; i++)

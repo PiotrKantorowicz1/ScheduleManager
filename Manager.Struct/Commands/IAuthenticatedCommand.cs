@@ -1,7 +1,9 @@
-﻿namespace Manager.Struct.Commands
+﻿using System;
+
+namespace Manager.Struct.Commands
 {
     public interface IAuthenticatedCommand : ICommand
     {
-        int UserId { get; set; }
+        Guid SerialNumber { get; set; }
     }
 }

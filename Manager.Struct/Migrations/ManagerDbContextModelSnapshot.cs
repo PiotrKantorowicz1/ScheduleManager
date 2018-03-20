@@ -28,7 +28,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 19, 22, 55, 30, 516, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 20, 22, 13, 52, 442, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -56,7 +56,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 19, 22, 55, 30, 516, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 20, 22, 13, 52, 442, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -110,7 +110,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 19, 22, 55, 30, 508, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 20, 22, 13, 52, 436, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -134,7 +134,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 19, 22, 55, 30, 511, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 20, 22, 13, 52, 438, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -168,6 +168,8 @@ namespace Manager.Struct.Migrations
                     b.Property<string>("Profession");
 
                     b.Property<string>("Role");
+
+                    b.Property<Guid>("SerialNumber");
 
                     b.Property<DateTime>("UpdatedAt");
 

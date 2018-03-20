@@ -23,6 +23,7 @@ namespace Manager.Api
 {
     public class Startup
     {
+        private static readonly string[] Headers = new []{"X-Operation", "X-Resource", "X-Total-Count"};
         public IContainer ApplicationContainer { get; private set; }
         public IConfiguration Configuration { get; }
 
@@ -70,6 +71,17 @@ namespace Manager.Api
                         ValidateLifetime = opts.ValidateLifetime
                     };
                 });
+            
+            services.AddAuthorization(x => x.AddPolicy("admin", p => p.RequireRole("admin")));
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", cors => 
+                        cors.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials()
+                            .WithExposedHeaders(Headers));
+            });
 
             var builder = new ContainerBuilder();
             builder.Populate(services);

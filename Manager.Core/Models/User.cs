@@ -14,6 +14,7 @@ namespace Manager.Core.Models
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         public int Id { get; set; }
+        public Guid SerialNumber { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
@@ -37,9 +38,10 @@ namespace Manager.Core.Models
             Tokens = new List<RefreshToken>();
         }
 
-        public User(string name, string email, string fullName, string avatar,
+        public User(Guid serialNumber, string name, string email, string fullName, string avatar,
             string role, string profession)
-        {
+        {        
+            SerialNumber = serialNumber;   
             SetName(name);
             SetFullName(fullName);
             SetEmail(email);

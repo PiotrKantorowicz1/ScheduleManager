@@ -55,7 +55,7 @@ namespace Manager.Struct.Services
                 throw new ServiceException(ErrorCodes.UserNotFound,
                     $"User: '{refreshToken.UserId}' was not found.");
             }
-            var jwt = _jwtHandler.CreateToken(user.Id, user.Role);
+            var jwt = _jwtHandler.CreateToken(user.SerialNumber, user.Role);
             jwt.RefreshToken = refreshToken.Token;
 
             return jwt;

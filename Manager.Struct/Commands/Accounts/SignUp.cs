@@ -1,7 +1,10 @@
-﻿namespace Manager.Struct.Commands.Accounts
+﻿using System;
+
+namespace Manager.Struct.Commands.Accounts
 {
     public class SignUp : ICommand
     {
+        public Guid SerialNumber { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }

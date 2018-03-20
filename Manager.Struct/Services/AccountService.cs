@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Manager.Core.Models;
 using Manager.Core.Repositories;
 using Manager.Struct.DTO;
@@ -23,7 +24,7 @@ namespace Manager.Struct.Services
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task SignUpAsync(string name, string fullName, string email, string password,
+        public async Task SignUpAsync(Guid serialNumber, string name, string fullName, string email, string password,
             string avatar, string profession, string role = Roles.User)
         {
             var user = await _userRepository.GetByEmailAsync(email);
@@ -32,7 +33,7 @@ namespace Manager.Struct.Services
                 throw new ServiceException(ErrorCodes.EmailInUse,
                     $"Email: '{email}' is already in use.");
             }
-            user = new User(name, email, fullName, avatar, role, profession);
+            user = new User(serialNumber, name, email, fullName, avatar, role, profession);
             user.SetPassword(password, _passwordHasher);
             await _userRepository.AddAsync(user);
         }
@@ -46,7 +47,7 @@ namespace Manager.Struct.Services
                     "Invalid credentials.");
             }
             var refreshToken = new RefreshToken(user, _passwordHasher);
-            var jwt = _jwtHandler.CreateToken(user.Id, user.Role);
+            var jwt = _jwtHandler.CreateToken(user.SerialNumber, user.Role);
             jwt.RefreshToken = refreshToken.Token;
             await _refreshTokenRepository.AddAsync(refreshToken);
 
