@@ -56,16 +56,6 @@ namespace Manager.Api.Controllers
             return Json(user);
         }
 
-        //[HttpPost]
-        //[Route("Register")]
-        //public async Task<IActionResult> Register([FromBody]User user)
-        //{
-        //    await _userService.RegisterAsync(user.Name, user.Email, user.FullName,
-        //        user.Password, user.Avatar, user.Role, user.Profession);
-
-        //    return Created($"users/{user.Email}", null);
-        //}
-
         //[HttpPut]
         //[Route("Update/{id}")]
         //public async Task<IActionResult> Put(int id, [FromBody]User user)

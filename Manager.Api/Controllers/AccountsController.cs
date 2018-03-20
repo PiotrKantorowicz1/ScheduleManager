@@ -42,5 +42,13 @@ namespace Manager.Api.Controllers
             
             return NoContent();
         }
+
+        [HttpPost("Revoke")]
+        public async Task<IActionResult> Revoke([FromBody] Revoke command)
+        {
+            await _refreshTokenService.RevokeAsync(command.RefreshToken, command.UserId);
+            
+            return NoContent();
+        }
     }
 }
