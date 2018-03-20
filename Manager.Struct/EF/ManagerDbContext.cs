@@ -11,6 +11,7 @@ namespace Manager.Struct.EF
         public DbSet<Activity> Activities { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Attendee> Attendees { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public ManagerDbContext(DbContextOptions options) : base(options)
         {
@@ -113,6 +114,19 @@ namespace Manager.Struct.EF
             activityBuilder
                 .HasOne(t => t.Creator)
                 .WithMany(c => c.ActivityCreated);
+
+            var tokensBuilder = builder.Entity<RefreshToken>();
+
+            tokensBuilder.ToTable("Tokens");
+
+            tokensBuilder
+                .Property(t => t.UserId)
+                .IsRequired();
+
+            tokensBuilder
+                .HasOne(t => t.User)
+                .WithMany(u => u.Tokens)
+                .HasForeignKey(t => t.UserId);
         }
     }
 }

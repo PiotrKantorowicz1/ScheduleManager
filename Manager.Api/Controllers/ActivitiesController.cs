@@ -6,9 +6,9 @@ using Manager.Core.Queries.Activities;
 
 namespace Manager.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class ActivitiesController : Controller
-    {
+        [Route("api/[controller]")]
+        public class ActivitiesController : Controller
+        {
         private readonly IActivityService _activityService;
 
         public ActivitiesController(IActivityService activityService)

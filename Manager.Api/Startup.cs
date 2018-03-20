@@ -1,18 +1,20 @@
 using System;
+using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Manager.Struct.EF;
-using Manager.Struct.Extensions;
 using Manager.Struct.IoC;
 using Manager.Struct.Services;
 using Manager.Struct.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
@@ -39,8 +41,35 @@ namespace Manager.Api
 
             services.AddCors();
 
-            services.AddMvc().AddDefaultJsonOptions();
+            services.AddMvc()
+                .AddJsonOptions(opt =>
+                {
+                    opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    opt.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+                    opt.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
+                    opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    opt.SerializerSettings.Formatting = Formatting.Indented;
+                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
+
+            var section = Configuration.GetSection("jwt");
+            var opts = new JwtOptions();
+            section.Bind(opts);
+            services.AddSingleton(opts);
+            services.AddAuthentication()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SecretKey)),
+                        ValidIssuer = opts.Issuer,
+                        ValidAudience = opts.ValidAudience,
+                        ValidateAudience = opts.ValidateAudience,
+                        ValidateLifetime = opts.ValidateLifetime
+                    };
+                });
 
             var builder = new ContainerBuilder();
             builder.Populate(services);

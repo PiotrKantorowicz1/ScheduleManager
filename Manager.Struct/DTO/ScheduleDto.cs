@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Manager.Struct.DTO.Validations;
 
 namespace Manager.Struct.DTO
 {
-    public class ScheduleDto : IValidatableObject
+    public class ScheduleDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -21,13 +17,5 @@ namespace Manager.Struct.DTO
         public string Creator { get; set; }
         public int CreatorId { get; set; }
         public int[] Attendees { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var validator = new ScheduleDtoValidator();
-            var result = validator.Validate(this);
-            return result.Errors.Select(item => 
-                new ValidationResult(item.ErrorMessage, new[] { item.PropertyName }));
-        }
     }
 }

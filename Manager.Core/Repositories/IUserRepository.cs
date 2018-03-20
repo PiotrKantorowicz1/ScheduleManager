@@ -7,5 +7,6 @@ namespace Manager.Core.Repositories
     {      
         Task<User> GetAsync(int id);
         Task<User> GetAsync(string name);
+        Task<User> GetByEmailAsync(string email);
     }
 }

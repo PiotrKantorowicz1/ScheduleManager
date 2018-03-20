@@ -6,11 +6,6 @@ namespace Manager.Core.Models
 {
     public class Schedule
     {
-        public Schedule()
-        {
-            Attendees = new List<Attendee>();
-        }
-
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -25,6 +20,11 @@ namespace Manager.Core.Models
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<Attendee> Attendees { get; set; }
+
+        public Schedule()
+        {
+            Attendees = new List<Attendee>();
+        }
 
         public Schedule(string title, string description, DateTime timestart, DateTime timeEnd,
             string location, int creatorId, ScheduleType type, ScheduleStatus status)
