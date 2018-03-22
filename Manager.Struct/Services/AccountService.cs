@@ -70,5 +70,17 @@ namespace Manager.Struct.Services
             user.SetPassword(newPassword, _passwordHasher);
             await _userRepository.UpdateAsync(user);        
         }
+
+        public async Task ChangeRoleAsync(int userId, string role)
+        {
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {                            
+                throw new ServiceException(ErrorCodes.UserNotFound, 
+                    $"User: '{userId}' was not found.");         
+            }
+            user.SetRole(role);
+            await _userRepository.UpdateAsync(user);
+        }
     }
 }

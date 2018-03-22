@@ -54,5 +54,13 @@ namespace Manager.Api.Controllers
             
             return Content($"Successfully logout user with id: '{command.UserId}'");
         }
+
+        [HttpPost("ChangeRole")]
+        public async Task<IActionResult> ChangeRole([FromBody] ChangeRole command)
+        {
+            await DispatchAsync(command);
+
+            return Content($"Role from user with id: '{command.Id}' was changed succesfully");
+        }
     }
 }

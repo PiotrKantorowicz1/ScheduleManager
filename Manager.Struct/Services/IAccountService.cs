@@ -11,5 +11,6 @@ namespace Manager.Struct.Services
             string avatar, string profession, string role = Roles.User);
         Task<JsonWebToken> SignInAsync(string email, string password);
         Task ChangePasswordAsync(int userId, string currentPassword, string newPassword);
+        Task ChangeRoleAsync(int userId, string role);
     }
 }

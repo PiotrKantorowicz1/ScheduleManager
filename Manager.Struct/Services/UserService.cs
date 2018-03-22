@@ -62,25 +62,25 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
-        //public async Task UpdateUserAsync(int id, string name, string email, string fullName,
-        //    string password, string avatar, string role, string profession)
-        //{
-        //    var user = await _userRepository.GetAsync(id);
-        //    if (user == null)
-        //    {
-        //        throw new ServiceException(ErrorCodes.InvalidName,
-        //            $"User with id: {name} not exists.");
-        //    }
+        public async Task UpdateUserAsync(int id, string name, string email, string fullName,
+           string avatar, string role, string profession)
+        {
+           var user = await _userRepository.GetAsync(id);
+           if (user == null)
+           {
+               throw new ServiceException(ErrorCodes.InvalidName,
+                   $"User with id: {name} not exists.");
+           }
 
-        //    user.SetName(name);
-        //    user.SetEmail(email);
-        //    user.SetFullName(fullName);
-        //    user.SetAvatar(avatar);
-        //    user.SetRole(role);
-        //    user.SetProfession(profession);          
+           user.SetName(name);
+           user.SetEmail(email);
+           user.SetFullName(fullName);
+           user.SetAvatar(avatar);
+           user.SetRole(role);
+           user.SetProfession(profession);          
 
-        //    await _userRepository.UpdateAsync(user);
-        //}      
+           await _userRepository.UpdateAsync(user);
+        }      
 
         public async Task RemoveUserScheduleAsync(int id)
         {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
 using Manager.Core.Queries.Users;
+using Manager.Struct.Commands.Users;
 
 namespace Manager.Api.Controllers
 {
@@ -56,15 +57,15 @@ namespace Manager.Api.Controllers
             return Json(user);
         }
 
-        //[HttpPut]
-        //[Route("Update/{id}")]
-        //public async Task<IActionResult> Put(int id, [FromBody]User user)
-        //{
-        //    await _userService.UpdateUserAsync(id, user.Name, user.Email, user.FullName,
-        //        user.Password, user.Avatar, user.Role, user.Profession);
+        [HttpPut]
+        [Route("Update/{id}")]
+        public async Task<IActionResult> Update([FromBody] UpdateUser command)
+        {
+           await _userService.UpdateUserAsync(command.Id, command.Name, command.FullName, command.Email,
+                command.Avatar, command.Role, command.Profession);
 
-        //    return NoContent();
-        //}
+           return NoContent();
+        }
 
         [HttpDelete]
         [Route("Remove/{id}")]
