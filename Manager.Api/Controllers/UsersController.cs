@@ -36,21 +36,42 @@ namespace Manager.Api.Controllers
             => Collection(await _userService.BrowseByRoleAsync(query));        
 
         [HttpPut]
-        [Route("Update/{id}")]
+        [Route("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateUser command)
         {
            await DispatchAsync(command);
 
-           return NoContent();
+           return Content($"Succesfully updated user with Name: '{command.Name}'");
         }
 
         [HttpDelete]
-        [Route("Remove/{id}")]
-        public IActionResult Delete(int id)
+        [AdminAuth]
+        [Route("Activities/{id}")]
+        public async Task<IActionResult> DeleteActivities(int id)
         {
-            //_userService.RemoveUserAsync(id);
+            await DispatchAsync(new RemoveUserActivities(id));
 
-            return NoContent();
+            return Content($"Successfully delete activitivies");
+        }
+
+        [HttpDelete]
+        [AdminAuth]
+        [Route("Schedules/{id}")]
+        public async Task<IActionResult> DeleteSchedules(int id)
+        {
+            await DispatchAsync(new RemoveUserSchedules(id));
+
+            return Content($"Successfully delete schedules");
+        }
+
+        [HttpDelete]
+        [AdminAuth]
+        [Route("Attendees/{id}")]
+        public async Task<IActionResult> DeleteAttendees(int id)
+        {
+            await DispatchAsync(new RemoveUserAttendees(id));
+
+            return Content($"Successfully delete attendees");
         }
     }
 }

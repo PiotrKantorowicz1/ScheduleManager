@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Manager.Api.Framework;
 using Manager.Struct.Commands;
 using Manager.Struct.Commands.Accounts;
 using Manager.Struct.Services;
@@ -33,6 +34,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> SignIn([FromBody] SignIn command)
             => Ok(await _accounteService.SignInAsync(command.Email, command.Password));
 
+        [AllowAnonymous]
         [HttpPost("Refresh/{refreshToken}")]
         public async Task<IActionResult> RefreshToken(string refreshToken)
             => Ok(await _refreshTokenService.CreateAccessTokenAsync(refreshToken));
@@ -53,6 +55,7 @@ namespace Manager.Api.Controllers
             return Content($"Successfully logout user with id: '{command.UserId}'");
         }
 
+        [AdminAuth]
         [HttpPut("ChangeRole")]
         public async Task<IActionResult> ChangeRole([FromBody] ChangeRole command)
         {

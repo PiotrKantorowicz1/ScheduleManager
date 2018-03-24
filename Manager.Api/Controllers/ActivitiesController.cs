@@ -6,9 +6,8 @@ using Manager.Core.Queries.Activities;
 
 namespace Manager.Api.Controllers
 {
-        [Route("api/[controller]")]
-        public class ActivitiesController : Controller
-        {
+    public class ActivitiesController : Controller
+    {
         private readonly IActivityService _activityService;
 
         public ActivitiesController(IActivityService activityService)
@@ -76,7 +75,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Create([FromBody]Activity activity)
         {
             await _activityService.CreateAsync(activity.Id, activity.Title, activity.Description, activity.TimeStart,
-                activity.TimeEnd, activity.Location,activity.CreatorId, activity.Type, activity.Priority, activity.Status);
+                activity.TimeEnd, activity.Location, activity.CreatorId, activity.Type, activity.Priority, activity.Status);
 
             return Created($"users/{activity.Title}", null);
         }
@@ -84,7 +83,7 @@ namespace Manager.Api.Controllers
         [HttpPut]
         [Route("Update/{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]Activity activity)
-        { 
+        {
             await _activityService.UpdateAsync(id, activity.Title, activity.Description, activity.TimeStart, activity.TimeEnd,
                 activity.Location, activity.CreatorId, activity.Type, activity.Priority, activity.Status);
 

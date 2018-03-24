@@ -23,6 +23,7 @@ namespace Manager.Struct.Services
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
             _passwordHasher = passwordHasher;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task CreateAsync(int userId)
