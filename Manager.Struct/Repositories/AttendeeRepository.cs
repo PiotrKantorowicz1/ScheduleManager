@@ -6,7 +6,7 @@ namespace Manager.Struct.Repositories
 {
     public class AttendeeRepository : RepositoryBase<Attendee>, IAttendeeRepository, ISqlRepository
     {
-        public AttendeeRepository(ManagerDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+        public AttendeeRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
     }

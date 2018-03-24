@@ -7,6 +7,6 @@ namespace Manager.Core.Repositories
     {
         Task<RefreshToken> GetAsync(string token);
         Task CreateTokenAsync(RefreshToken token);
-        Task UpdateTokenAsync(RefreshToken token);
+        void UpdateTokenAsync(RefreshToken token);
     }
 }

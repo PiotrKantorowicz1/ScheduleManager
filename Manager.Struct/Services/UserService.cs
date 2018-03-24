@@ -77,7 +77,8 @@ namespace Manager.Struct.Services
             user.SetRole(role);
             user.SetProfession(profession);
 
-            await _userRepository.UpdateAsync(user);
+            _userRepository.Update(user);
+            await _userRepository.Commit();
         }
 
         public async Task RemoveUserScheduleAsync(int id)
@@ -86,8 +87,8 @@ namespace Manager.Struct.Services
 
             foreach (var schedule in schedules)
             {
-                await _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == schedule.Id);
-                await _scheduleRepository.DeleteAsync(schedule);
+                _attendeeRepository.DeleteWhere(a => a.ScheduleId == schedule.Id);
+                _scheduleRepository.Delete(schedule);
             }
         }
 
@@ -97,7 +98,7 @@ namespace Manager.Struct.Services
 
             foreach (var attendee in attendees)
             {
-                await _attendeeRepository.DeleteAsync(attendee);
+                 _attendeeRepository.Delete(attendee);
             }
         }
 
@@ -112,7 +113,8 @@ namespace Manager.Struct.Services
             await RemoveUserAttendeeAsync(id);
             await RemoveUserScheduleAsync(id);
 
-            await _userRepository.DeleteAsync(user);
+            _userRepository.Delete(user);
+            await _userRepository.Commit();
         }
     }
 }

@@ -6,6 +6,7 @@ using Manager.Core.Queries.Activities;
 using Manager.Core.Repositories;
 using Manager.Core.Types;
 using Manager.Struct.DTO;
+using Manager.Struct.EF;
 using Manager.Struct.Exceptions;
 
 namespace Manager.Struct.Services
@@ -13,11 +14,14 @@ namespace Manager.Struct.Services
     public class ActivityService : IActivityService
     {
         private readonly IActivityRepository _activityRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ActivityService(IActivityRepository activityRepository, IMapper mapper)
+        public ActivityService(IActivityRepository activityRepository, IMapper mapper,
+            IUnitOfWork unitOfWork)
         {
             _activityRepository = activityRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -80,6 +84,7 @@ namespace Manager.Struct.Services
             activity = new Activity(title, description, timestart, timeEnd, location,
                 creatorId, type, priority, status);
             await _activityRepository.AddAsync(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
@@ -102,7 +107,8 @@ namespace Manager.Struct.Services
             activity.Priority = priority;
             activity.Status = status;
 
-            await _activityRepository.UpdateAsync(activity);
+            _activityRepository.Update(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
       
         public async Task DeleteAsync(int id)
@@ -114,7 +120,8 @@ namespace Manager.Struct.Services
                     $"task with this id: {id} not exists.");
             }
 
-            await _activityRepository.DeleteAsync(activity);
+            _activityRepository.Delete(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

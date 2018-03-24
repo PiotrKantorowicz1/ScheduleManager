@@ -13,21 +13,19 @@ namespace Manager.Struct.Repositories
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        private readonly ManagerDbContext _context;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RepositoryBase(ManagerDbContext context, IUnitOfWork unitOfWork)
+        public RepositoryBase(IUnitOfWork unitOfWork)
         {
-            _context = context;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate)
-             => await _context.Set<T>().FirstOrDefaultAsync(predicate);
+             => await _unitOfWork.Set<T>().FirstOrDefaultAsync(predicate);
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _unitOfWork.Set<T>();
 
             query = includeProperties.Aggregate(query,
                 (current, includeProperty) => current.Include(includeProperty));
@@ -36,18 +34,18 @@ namespace Manager.Struct.Repositories
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
-            => await _context.Set<T>().ToListAsync();
+            => await _unitOfWork.Set<T>().ToListAsync();
 
         public async Task<PagedResult<T>> GetAllPageable()
-            => await _context.Set<T>().PaginateAsync();
+            => await _unitOfWork.Set<T>().PaginateAsync();
 
         public async Task<PagedResult<T>> GetAllPageable<TQuery>(Expression<Func<T, bool>> predicate, TQuery query)
             where TQuery : PagedQueryBase
-            => await _context.Set<T>().Where(predicate).PaginateAsync(); 
+            => await _unitOfWork.Set<T>().Where(predicate).PaginateAsync(); 
 
         public virtual async Task<IEnumerable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
-            IQueryable<T> query = _context.Set<T>();
+            IQueryable<T> query = _unitOfWork.Set<T>();
 
             query = includeProperties.Aggregate(query,
                 (current, includeProperty) => current.Include(includeProperty));
@@ -56,34 +54,35 @@ namespace Manager.Struct.Repositories
         }
 
         public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
-            => await _context.Set<T>().Where(predicate).ToArrayAsync();
+            => await _unitOfWork.Set<T>().Where(predicate).ToArrayAsync();
 
         public virtual async Task AddAsync(T entity)
         {
             await _unitOfWork.Set<T>().AddAsync(entity);
-            await _unitOfWork.SaveChangesAsync(); 
         }
 
-        public virtual async Task UpdateAsync(T entity)
+        public virtual void Update(T entity)
         {
-            _unitOfWork.Set<T>().Update(entity);
-            await _unitOfWork.SaveChangesAsync(); 
+            _unitOfWork.Set<T>().Update(entity); 
         }
-        public virtual async Task DeleteAsync(T entity)
+        public virtual void Delete(T entity)
         {
             _unitOfWork.Set<T>().Remove(entity); 
-            await _unitOfWork.SaveChangesAsync(); 
         }
 
-        public virtual async Task DeleteWhereAsync(Expression<Func<T, bool>> predicate)
+        public virtual void DeleteWhere(Expression<Func<T, bool>> predicate)
         {
             var entities = _unitOfWork.Set<T>().Where(predicate);
 
             foreach (var entity in entities)
             {
                 _unitOfWork.Set<T>().Remove(entity);
-                await _unitOfWork.SaveChangesAsync();
             }
+        }
+
+        public async Task Commit()
+        {
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

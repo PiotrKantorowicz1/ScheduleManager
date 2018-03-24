@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class ActivityRepository : RepositoryBase<Activity>, IActivityRepository, ISqlRepository
     {
-        public ActivityRepository(ManagerDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+        public ActivityRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 

@@ -17,8 +17,9 @@ namespace Manager.Core.Repositories
         Task<IEnumerable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
         Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
-        Task DeleteWhereAsync(Expression<Func<T, bool>> predicate);
+        void Update(T entity);
+        void Delete(T entity);
+        void DeleteWhere(Expression<Func<T, bool>> predicate);
+        Task Commit();
     }
 }

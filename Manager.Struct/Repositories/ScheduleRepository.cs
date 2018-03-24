@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class ScheduleRepository : RepositoryBase<Schedule>, IScheduleRepository, ISqlRepository
     {
-        public ScheduleRepository(ManagerDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+        public ScheduleRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 
