@@ -16,7 +16,7 @@ namespace Manager.Struct.Handlers.Users
 
         public async Task HandleAsync(RemoveUserAttendees command)
         {
-            await _userService.RemoveUserAttendeesAsync(command.Id);
+            await _userService.DeleteUserAttendeesProperlyAsync(command.Id);
         }
     }
 }

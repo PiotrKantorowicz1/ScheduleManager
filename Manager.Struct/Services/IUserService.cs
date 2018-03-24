@@ -3,6 +3,7 @@ using Manager.Struct.DTO;
 using System.Threading.Tasks;
 using Manager.Core.Queries.Users;
 using Manager.Core.Types;
+using System;
 
 namespace Manager.Struct.Services
 {
@@ -10,6 +11,9 @@ namespace Manager.Struct.Services
     {
         Task<UserDto> GetAsync(int id);
         Task<UserDto> GetByEmailAsync(string email);
+        Task<Guid> GetSerialNumerAsync(string email);
+        Task<string> GetUserRoleAsync(string email);
+        Task<bool> IsUserInRoleAsync(string email);
         Task<IEnumerable<UserDto>> GetAllAsync();
         Task<PagedResult<UserDto>> BrowseAsync();
         Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query);

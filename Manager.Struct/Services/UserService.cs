@@ -45,6 +45,29 @@ namespace Manager.Struct.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
+        public async Task<Guid> GetSerialNumerAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            return user.SerialNumber;
+        }
+
+        public async Task<string> GetUserRoleAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            return user.Role;
+        }
+        public async Task<bool> IsUserInRoleAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            var role = user.Role;
+
+            if (role == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<IEnumerable<UserDto>> GetAllAsync()
         {
             var users = await _userRepository.GetAllAsync();

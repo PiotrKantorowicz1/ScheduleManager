@@ -106,7 +106,7 @@ namespace Manager.Struct.Services
             await _userService.RemoveUserActivitiesAsync(id);
 
             _userRepository.Delete(user);
-            await _userRepository.Commit();     
+            await _unitOfWork.SaveChangesAsync();     
         }
     }
 }

@@ -24,24 +24,45 @@ namespace Manager.Api.Controllers
             => Single(await _userService.GetAsync(id), x => x.Id == id || IsAdmin);
 
         [HttpGet]
+        [Route("Get/{email}")]
+        public async Task<IActionResult> Get(string email)
+            => Single(await _userService.GetByEmailAsync(email), x => x.Email == email || IsAdmin);
+
+        [HttpGet]
+        [AdminAuth]
+        [Route("GetSerialNumber/{email}")]
+        public async Task<IActionResult> GetSerialNumber(string email)
+            => Single(await _userService.GetSerialNumerAsync(email));
+
+        [HttpGet]
+        [Route("GetRole/{email}")]
+        public async Task<IActionResult> GetRole(string email)
+            => Single(await _userService.GetUserRoleAsync(email));
+
+        [HttpGet]
+        [Route("GetInRole/{email}")]
+        public async Task<IActionResult> IsUserInRole(string email)
+            => Single(await _userService.IsUserInRoleAsync(email));
+
+        [HttpGet]
         [AdminAuth]
         [Route("GetAllPageable")]
         public async Task<IActionResult> GetAllPageable()
-            => Collection(await _userService.BrowseAsync());      
+            => Collection(await _userService.BrowseAsync());
 
         [HttpGet]
         [AdminAuth]
         [Route("FilterByUserRole")]
         public async Task<IActionResult> FilterByUserRole([FromQuery] BrowseUsersByRole query)
-            => Collection(await _userService.BrowseByRoleAsync(query));        
+            => Collection(await _userService.BrowseByRoleAsync(query));
 
         [HttpPut]
         [Route("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateUser command)
         {
-           await DispatchAsync(command);
+            await DispatchAsync(command);
 
-           return Content($"Succesfully updated user with Name: '{command.Name}'");
+            return Content($"Succesfully updated user with Name: '{command.Name}'");
         }
 
         [HttpDelete]
