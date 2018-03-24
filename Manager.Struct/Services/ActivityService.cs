@@ -31,7 +31,7 @@ namespace Manager.Struct.Services
 
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
                     $"task with this id: {id} not exists.");
             }
 
@@ -71,30 +71,32 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
-            ActivityType type, ActivityPriority priority, ActivityStatus status)
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
+            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity != null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
                     $"Activity with this {title} already exists.");
             }
 
-            activity = new Activity(title, description, timestart, timeEnd, location,
-                creatorId, type, priority, status);
+            activity = new Activity(title, description, timestart, timeEnd, location, creatorId);
+
+            activity.SetStates(type, priority, status);
+
             await _activityRepository.AddAsync(activity);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
-            int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,
+            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
-                    $"Activity with this id: {id} not exists.");
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
+                    $"Activity with this title: {title} not exists.");
             }
 
             activity.SetTitle(title);
@@ -103,21 +105,20 @@ namespace Manager.Struct.Services
             activity.SetTimeEnd(timeEnd);
             activity.SetLocation(location);
             activity.SetCreator(creatorId);
-            activity.Type = type;
-            activity.Priority = priority;
-            activity.Status = status;
+
+            activity.SetStates(type, priority, status);
 
             _activityRepository.Update(activity);
             await _unitOfWork.SaveChangesAsync();
         }
-      
+
         public async Task DeleteAsync(int id)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
-                    $"task with this id: {id} not exists.");
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
+                    $"task with this id: {activity.Title} not exists.");
             }
 
             _activityRepository.Delete(activity);

@@ -16,5 +16,6 @@
         public static string InvalidLocation => "invalid_location";         
         public static string InvalidRefreshToken => "invalid_refreshToken";
         public static string InvalidCredentials => "invalid_credentials";
+        public static string InvalidCompleted => "invalid_status";
     }
 }

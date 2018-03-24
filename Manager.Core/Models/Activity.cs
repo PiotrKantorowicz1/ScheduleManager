@@ -23,8 +23,8 @@ namespace Manager.Core.Models
         {
         }
 
-        public Activity(string title, string description, DateTime timestart, DateTime timeEnd, 
-            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
+        public Activity(string title, string description, DateTime timestart, DateTime timeEnd,
+            string location, int creatorId)
         {
             SetTitle(title);
             SetDescription(description);
@@ -32,6 +32,13 @@ namespace Manager.Core.Models
             SetTimeEnd(timeEnd);
             SetCreator(creatorId);
             SetLocation(location);
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetStates(ActivityType type, ActivityPriority priority, 
+            ActivityStatus status)
+        {
             Type = type;
             Priority = priority;
             Status = status;
@@ -101,7 +108,7 @@ namespace Manager.Core.Models
         }
 
         public void SetCreator(int creatorId)
-        {           
+        {
             CreatorId = creatorId;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -119,20 +126,21 @@ namespace Manager.Core.Models
         }
     }
 
-    public enum ActivityPriority 
+    public enum ActivityPriority
     {
         High = 1,
         Medium = 2,
         Low = 3
     }
 
-    public enum ActivityStatus 
+    public enum ActivityStatus
     {
         ToMake = 1,
-        Done = 2
+        Completed = 2,
+        Canceled = 3
     }
 
-    public enum ActivityType 
+    public enum ActivityType
     {
         Work = 1,
         Programming = 2,
