@@ -24,7 +24,7 @@ namespace Manager.Api.Controllers
             => Single(await _userService.GetAsync(id), x => x.Id == id || IsAdmin);
 
         [HttpGet]
-        [Route("Get/{email}")]
+        [Route("GetByEmail/{email}")]
         public async Task<IActionResult> Get(string email)
             => Single(await _userService.GetByEmailAsync(email), x => x.Email == email || IsAdmin);
 

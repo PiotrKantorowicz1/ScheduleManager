@@ -41,7 +41,7 @@ namespace Manager.Struct.Repositories
 
         public async Task<PagedResult<T>> GetAllPageable<TQuery>(Expression<Func<T, bool>> predicate, TQuery query)
             where TQuery : PagedQueryBase
-            => await _unitOfWork.Set<T>().Where(predicate).PaginateAsync(); 
+            => await _unitOfWork.Set<T>().Where(predicate).PaginateAsync();
 
         public virtual async Task<IEnumerable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
@@ -51,6 +51,11 @@ namespace Manager.Struct.Repositories
                 (current, includeProperty) => current.Include(includeProperty));
 
             return await query.ToListAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _unitOfWork.Set<T>().CountAsync();
         }
 
         public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
@@ -63,11 +68,11 @@ namespace Manager.Struct.Repositories
 
         public virtual void Update(T entity)
         {
-            _unitOfWork.Set<T>().Update(entity); 
+            _unitOfWork.Set<T>().Update(entity);
         }
         public virtual void Delete(T entity)
         {
-            _unitOfWork.Set<T>().Remove(entity); 
+            _unitOfWork.Set<T>().Remove(entity);
         }
 
         public virtual void DeleteWhere(Expression<Func<T, bool>> predicate)
@@ -78,11 +83,6 @@ namespace Manager.Struct.Repositories
             {
                 _unitOfWork.Set<T>().Remove(entity);
             }
-        }
-
-        public async Task Commit()
-        {
-            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

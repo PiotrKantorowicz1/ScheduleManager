@@ -13,7 +13,5 @@ namespace Manager.Struct.DTO
         public string Avatar { get; set; }
         public string Role { get; set; }
         public string Profession { get; set; }
-        public int SchedulesCreated { get; set; }
-        public int ActivitiesCreated { get; set; }
     }
 }

@@ -73,7 +73,7 @@ namespace Manager.Struct.Services
             }
             refreshToken.Revoke();
             _refreshTokenRepository.Update(refreshToken);
-            await _refreshTokenRepository.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

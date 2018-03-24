@@ -90,6 +90,7 @@ namespace Manager.Struct.Services
            string avatar, string role, string profession)
         {
             var user = await _userRepository.GetAsync(id);
+
             if (user == null)
             {
                 throw new ServiceException(ErrorCodes.InvalidName,
@@ -104,7 +105,7 @@ namespace Manager.Struct.Services
             user.SetProfession(profession);
 
             _userRepository.Update(user);
-            await _userRepository.Commit();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task RemoveUserSchedulesAsync(int id)

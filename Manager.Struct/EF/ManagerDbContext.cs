@@ -113,7 +113,7 @@ namespace Manager.Struct.EF
 
             activityBuilder
                 .HasOne(t => t.Creator)
-                .WithMany(c => c.ActivityCreated);
+                .WithMany(c => c.ActivitiesCreated);
 
             var tokensBuilder = builder.Entity<RefreshToken>();
 

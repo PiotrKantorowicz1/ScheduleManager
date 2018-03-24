@@ -52,10 +52,6 @@ namespace Manager.Struct.Mappers
                     .ForMember(vm => vm.Priorities, map =>
                         map.UseValue(Enum.GetNames(typeof(ActivityPriority)).ToArray()));
 
-                cfg.CreateMap<User, UserDto>()
-                    .ForMember(vm => vm.SchedulesCreated,
-                        map => map.MapFrom(u => u.SchedulesCreated.Count()));
-
                 cfg.CreateMap<ScheduleDto, Schedule>()                  
                     .ForMember(s => s.Creator, map => map.UseValue((Schedule)null))
                     .ForMember(s => s.Attendees, map => map.UseValue(new List<Attendee>()));
