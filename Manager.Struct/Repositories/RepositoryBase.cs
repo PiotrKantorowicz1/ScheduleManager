@@ -7,16 +7,19 @@ using Manager.Struct.EF;
 using System.Threading.Tasks;
 using Manager.Core.Repositories;
 using Manager.Core.Types;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Manager.Struct.Repositories
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         private readonly ManagerDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RepositoryBase(ManagerDbContext context)
+        public RepositoryBase(ManagerDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate)
@@ -55,38 +58,32 @@ namespace Manager.Struct.Repositories
         public virtual async Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate)
             => await _context.Set<T>().Where(predicate).ToArrayAsync();
 
-        public virtual async Task<int> CountAsync()
-            => await _context.Set<T>().CountAsync();
-
         public virtual async Task AddAsync(T entity)
         {
-            await _context.Set<T>().AddAsync(entity);
-
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Set<T>().AddAsync(entity);
+            await _unitOfWork.SaveChangesAsync(); 
         }
 
         public virtual async Task UpdateAsync(T entity)
         {
-            _context.Set<T>().Update(entity);
-
-            await _context.SaveChangesAsync();
+            _unitOfWork.Set<T>().Update(entity);
+            await _unitOfWork.SaveChangesAsync(); 
         }
-        public virtual void DeleteAsync(T entity)
+        public virtual async Task DeleteAsync(T entity)
         {
-            _context.Set<T>().Remove(entity);
+            _unitOfWork.Set<T>().Remove(entity); 
+            await _unitOfWork.SaveChangesAsync(); 
         }
 
-        public virtual void DeleteWhereAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task DeleteWhereAsync(Expression<Func<T, bool>> predicate)
         {
-            var entities = _context.Set<T>().Where(predicate);
+            var entities = _unitOfWork.Set<T>().Where(predicate);
 
             foreach (var entity in entities)
             {
-                DeleteAsync(entity);
+                _unitOfWork.Set<T>().Remove(entity);
+                await _unitOfWork.SaveChangesAsync();
             }
         }
-
-        public virtual async Task Commit()
-            => await _context.SaveChangesAsync();
     }
 }

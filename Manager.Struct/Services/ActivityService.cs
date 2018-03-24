@@ -67,12 +67,6 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task<PagedResult<ActivityDto>> BrowseByLocationAsync(BrowseActivitiesByLocation query)
-        {
-            var filtersActivities = await _activityRepository.GetAllPageable(a => a.Location == query.Location, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
-        }
-
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
             ActivityType type, ActivityPriority priority, ActivityStatus status)
         {
@@ -120,7 +114,7 @@ namespace Manager.Struct.Services
                     $"task with this id: {id} not exists.");
             }
 
-            _activityRepository.DeleteAsync(activity);
+            await _activityRepository.DeleteAsync(activity);
         }
     }
 }

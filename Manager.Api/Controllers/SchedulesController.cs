@@ -44,15 +44,6 @@ namespace Manager.Api.Controllers
         }
 
         [HttpGet]
-        [Route("FilterByLocation/{location}")]
-        public async Task<IActionResult> Get(BrowseSchedulesByLocation query)
-        {
-            var users = await _scheduleSerivce.BrowseByLocationAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
         [Route("Get/{id}")]
         public async Task<IActionResult> Get(int id)
         {

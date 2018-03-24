@@ -78,12 +78,6 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
         }
 
-        public async Task<PagedResult<ScheduleDto>> BrowseByLocationAsync(BrowseSchedulesByLocation query)
-        {
-            var filterSchedules = await _scheduleRepository.GetAllPageable(s => s.Location == query.Location, query);
-            return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
-        }
-
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location,
             int creatorId, ScheduleType type, ScheduleStatus status)
         {
@@ -125,7 +119,7 @@ namespace Manager.Struct.Services
 
             await _scheduleRepository.UpdateAsync(schedule);
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
+            await _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
 
             foreach (var attendee in schedule.Attendees)
             {
@@ -142,8 +136,8 @@ namespace Manager.Struct.Services
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
-            _scheduleRepository.DeleteAsync(schedule);
+            await _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
+            await _scheduleRepository.DeleteAsync(schedule);
         }
 
         public async Task DeleteAttendeesAsync(int id, int attendeeId)
@@ -155,7 +149,7 @@ namespace Manager.Struct.Services
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id && a.UserId == attendeeId);
+            await _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id && a.UserId == attendeeId);
         }
     }
 }

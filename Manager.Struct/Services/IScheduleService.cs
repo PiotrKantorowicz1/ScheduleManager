@@ -14,7 +14,6 @@ namespace Manager.Struct.Services
         Task<PagedResult<ScheduleDto>> BrowseAsync();
         Task<PagedResult<ScheduleDto>> BrowseByCreatorAsync(BrowseSchedulesByCreator query);
         Task<PagedResult<ScheduleDto>> BrowseByTitleAsync(BrowseSchedulesByTitle query);
-        Task<PagedResult<ScheduleDto>> BrowseByLocationAsync(BrowseSchedulesByLocation query);
         Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
             string location, int creatorId, ScheduleType type, ScheduleStatus status);
         Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,

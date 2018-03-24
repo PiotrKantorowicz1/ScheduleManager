@@ -5,7 +5,7 @@ using Manager.Core.Models;
 
 namespace Manager.Struct.EF
 {
-    public class ManagerDbContext : DbContext
+    public class ManagerDbContext : DbContext, IUnitOfWork
     {
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Activity> Activities { get; set; }

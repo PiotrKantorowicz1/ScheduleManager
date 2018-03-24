@@ -12,10 +12,8 @@ namespace Manager.Api.Controllers
         private readonly IAccountService _accounteService;
         private readonly IRefreshTokenService _refreshTokenService;
 
-        public AccountsController(IAccountService accounteService,
-            IRefreshTokenService refreshTokenService,
-            ICommandDispatcher commandDispatcher)
-            : base(commandDispatcher)
+        public AccountsController(IAccountService accounteService, IRefreshTokenService refreshTokenService,
+            ICommandDispatcher commandDispatcher) : base(commandDispatcher)
         {
             _accounteService = accounteService;
             _refreshTokenService = refreshTokenService;
@@ -55,12 +53,21 @@ namespace Manager.Api.Controllers
             return Content($"Successfully logout user with id: '{command.UserId}'");
         }
 
-        [HttpPost("ChangeRole")]
+        [HttpPut("ChangeRole")]
         public async Task<IActionResult> ChangeRole([FromBody] ChangeRole command)
         {
             await DispatchAsync(command);
 
             return Content($"Role from user with id: '{command.Id}' was changed succesfully");
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {         
+            await DispatchAsync(new DeleteAccount(id));
+
+            return Content($"Successfully deleted user with id: {id}");
+        }
+
     }
 }

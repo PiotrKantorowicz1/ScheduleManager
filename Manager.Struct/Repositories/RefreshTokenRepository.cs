@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshTokenRepository, ISqlRepository
     {
-        public RefreshTokenRepository(ManagerDbContext context) : base(context)
+        public RefreshTokenRepository(ManagerDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
         {
         }
 

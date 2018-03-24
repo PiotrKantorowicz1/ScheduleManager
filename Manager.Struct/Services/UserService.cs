@@ -7,6 +7,8 @@ using Manager.Struct.Exceptions;
 using System.Threading.Tasks;
 using Manager.Core.Queries.Users;
 using Manager.Core.Types;
+using System;
+using Manager.Struct.EF;
 
 namespace Manager.Struct.Services
 {
@@ -15,14 +17,16 @@ namespace Manager.Struct.Services
         private readonly IUserRepository _userRepository;
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IAttendeeRepository _attendeeRepository;
+        private readonly IUnitOfWork _unitOfWork;     
         private readonly IMapper _mapper;
 
         public UserService(IUserRepository userRepository, IScheduleRepository scheduleRepository,
-            IAttendeeRepository attendeeRepository, IMapper mapper)
+            IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
             _attendeeRepository = attendeeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -50,12 +54,6 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(users);
         }
 
-        public async Task<PagedResult<UserDto>> BrowseByProfessionAsync(BrowseUsersByProfession query)
-        {
-            var filterUsers = await _userRepository.GetAllPageable(u => u.Profession == query.Profession, query);
-            return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
-        }
-
         public async Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query)
         {
             var filterUsers = await _userRepository.GetAllPageable(u => u.Role == query.Role, query);
@@ -65,22 +63,22 @@ namespace Manager.Struct.Services
         public async Task UpdateUserAsync(int id, string name, string email, string fullName,
            string avatar, string role, string profession)
         {
-           var user = await _userRepository.GetAsync(id);
-           if (user == null)
-           {
-               throw new ServiceException(ErrorCodes.InvalidName,
-                   $"User with id: {name} not exists.");
-           }
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
+            {
+                throw new ServiceException(ErrorCodes.InvalidName,
+                    $"User with id: {name} not exists.");
+            }
 
-           user.SetName(name);
-           user.SetEmail(email);
-           user.SetFullName(fullName);
-           user.SetAvatar(avatar);
-           user.SetRole(role);
-           user.SetProfession(profession);          
+            user.SetName(name);
+            user.SetEmail(email);
+            user.SetFullName(fullName);
+            user.SetAvatar(avatar);
+            user.SetRole(role);
+            user.SetProfession(profession);
 
-           await _userRepository.UpdateAsync(user);
-        }      
+            await _userRepository.UpdateAsync(user);
+        }
 
         public async Task RemoveUserScheduleAsync(int id)
         {
@@ -88,23 +86,19 @@ namespace Manager.Struct.Services
 
             foreach (var schedule in schedules)
             {
-                _attendeeRepository.DeleteWhereAsync(a => a.Id == id);
-                _scheduleRepository.DeleteAsync(schedule);
+                await _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == schedule.Id);
+                await _scheduleRepository.DeleteAsync(schedule);
             }
-
-            await _userRepository.Commit();
         }
 
         public async Task RemoveUserAttendeeAsync(int id)
         {
-            var attendees = await _attendeeRepository.FindByAsync(a => a.Id == id);
+            var attendees = await _attendeeRepository.FindByAsync(a => a.UserId == id);
 
             foreach (var attendee in attendees)
             {
-                _attendeeRepository.DeleteAsync(attendee);
+                await _attendeeRepository.DeleteAsync(attendee);
             }
-
-            await _userRepository.Commit();
         }
 
         public async Task RemoveUserAsync(int id)
@@ -115,13 +109,10 @@ namespace Manager.Struct.Services
                 throw new ServiceException(ErrorCodes.UserNotFound,
                     $"User with id: {id} not exists.");
             }
-
             await RemoveUserAttendeeAsync(id);
             await RemoveUserScheduleAsync(id);
 
-             _userRepository.DeleteAsync(user);
-
-            await _userRepository.Commit();
+            await _userRepository.DeleteAsync(user);
         }
     }
 }

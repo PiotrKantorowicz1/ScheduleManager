@@ -12,7 +12,6 @@ namespace Manager.Struct.Services
         Task<UserDto> GetByEmailAsync(string email);
         Task<IEnumerable<UserDto>> GetAllAsync();
         Task<PagedResult<UserDto>> BrowseAsync();
-        Task<PagedResult<UserDto>> BrowseByProfessionAsync(BrowseUsersByProfession query);
         Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query);
         Task UpdateUserAsync(int id, string name, string email, string fullName,
            string avatar, string role, string profession);

@@ -3,66 +3,43 @@ using Manager.Struct.Services;
 using System.Threading.Tasks;
 using Manager.Core.Queries.Users;
 using Manager.Struct.Commands.Users;
+using Manager.Struct.Commands;
+using Manager.Api.Framework;
 
 namespace Manager.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ICommandDispatcher commandDispatcher)
+            : base(commandDispatcher)
         {
             _userService = userService;
         }
 
         [HttpGet]
-        [Route("GetAllPageable")]
-        public async Task<IActionResult> Get()
-        {
-            var users = await _userService.BrowseAsync();
-
-            return Json(users);
-        }
-
-        [HttpGet]
-        [Route("FilterByProfession/{profession}")]
-        public async Task<IActionResult> Get(BrowseUsersByProfession query)
-        {
-            var users = await _userService.BrowseByProfessionAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
-        [Route("FilterByRole/{role}")]
-        public async Task<IActionResult> Get(BrowseUsersByRole query)
-        {
-            var users = await _userService.BrowseByRoleAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
         [Route("Get/{id}")]
         public async Task<IActionResult> Get(int id)
-        {
-            var user = await _userService.GetAsync(id);
+            => Single(await _userService.GetAsync(id), x => x.Id == id || IsAdmin);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
+        [HttpGet]
+        [AdminAuth]
+        [Route("GetAllPageable")]
+        public async Task<IActionResult> GetAllPageable()
+            => Collection(await _userService.BrowseAsync());      
 
-            return Json(user);
-        }
+        [HttpGet]
+        [AdminAuth]
+        [Route("FilterByUserRole")]
+        public async Task<IActionResult> FilterByUserRole([FromQuery] BrowseUsersByRole query)
+            => Collection(await _userService.BrowseByRoleAsync(query));        
 
         [HttpPut]
         [Route("Update/{id}")]
         public async Task<IActionResult> Update([FromBody] UpdateUser command)
         {
-           await _userService.UpdateUserAsync(command.Id, command.Name, command.FullName, command.Email,
-                command.Avatar, command.Role, command.Profession);
+           await DispatchAsync(command);
 
            return NoContent();
         }

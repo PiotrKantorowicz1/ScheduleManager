@@ -1,6 +1,7 @@
 using System.Reflection;
 using Autofac;
 using Manager.Core.Models;
+using Manager.Struct.EF;
 using Manager.Struct.Services;
 using Microsoft.AspNetCore.Identity;
 
@@ -25,6 +26,10 @@ namespace Manager.Struct.IoC.Modules
 
             builder.RegisterType<PasswordHasher<User>>()
                 .As<IPasswordHasher<User>>()
+                .SingleInstance();
+
+            builder.RegisterType<ManagerDbContext>()
+                .As<IUnitOfWork>()
                 .SingleInstance();
         }
     }

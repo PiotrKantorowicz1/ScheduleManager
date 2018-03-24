@@ -98,7 +98,7 @@ namespace Manager.Api
 
             loggerFactory.AddNLog();
             app.AddNLogWeb();
-    //        env.ConfigureNLog("nlog.config");
+            env.ConfigureNLog("nlog.config");
 
             app.UseExceptionHandler();
 

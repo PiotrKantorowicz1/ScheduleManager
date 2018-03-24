@@ -16,11 +16,9 @@ namespace Manager.Core.Repositories
             where TQuery : PagedQueryBase;
         Task<IEnumerable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
         Task<IEnumerable<T>> FindByAsync(Expression<Func<T, bool>> predicate);
-        Task<int> CountAsync();
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-        void DeleteAsync(T entity);
-        void DeleteWhereAsync(Expression<Func<T, bool>> predicate);
-        Task Commit();
+        Task DeleteAsync(T entity);
+        Task DeleteWhereAsync(Expression<Func<T, bool>> predicate);
     }
 }
