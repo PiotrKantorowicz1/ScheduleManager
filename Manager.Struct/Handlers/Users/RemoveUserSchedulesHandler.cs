@@ -16,7 +16,7 @@ namespace Manager.Struct.Handlers.Users
 
         public async Task HandleAsync(RemoveUserSchedules command)
         {
-            await _userService.RemoveUserScheduleAsync(command.Id);
+            await _userService.RemoveUserSchedulesAsync(command.Id);
         }
     }
 }

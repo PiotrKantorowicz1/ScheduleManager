@@ -48,7 +48,7 @@ namespace Manager.Api.Controllers
         [Route("Remove/{id}")]
         public IActionResult Delete(int id)
         {
-            _userService.RemoveUserAsync(id);
+            //_userService.RemoveUserAsync(id);
 
             return NoContent();
         }

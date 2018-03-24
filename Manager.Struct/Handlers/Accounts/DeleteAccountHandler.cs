@@ -7,16 +7,16 @@ namespace Manager.Struct.Handlers.Users
 {
     public class DeleteAccountHandler : ICommandHandler<DeleteAccount>
     {
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
 
-        public DeleteAccountHandler(IUserService userService)
+        public DeleteAccountHandler(IAccountService accountService)
         {
-            _userService = userService;
+            _accountService = accountService;
         }
 
         public async Task HandleAsync(DeleteAccount command)
         {
-            await _userService.RemoveUserAsync(command.Id);
+            await  _accountService.DeleteAccount(command.Id);
         }
     }
 }

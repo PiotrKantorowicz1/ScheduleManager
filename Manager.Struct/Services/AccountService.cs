@@ -16,15 +16,18 @@ namespace Manager.Struct.Services
         private readonly IJwtHandler _jwtHandler;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
         public AccountService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher,
-            IJwtHandler jwtHandler, IRefreshTokenRepository refreshTokenRepository, IUnitOfWork unitOfWork)
+            IJwtHandler jwtHandler, IRefreshTokenRepository refreshTokenRepository, IUnitOfWork unitOfWork,
+            IUserService userService)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _jwtHandler = jwtHandler;
             _refreshTokenRepository = refreshTokenRepository;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
         public async Task SignUpAsync(Guid serialNumber, string name, string fullName, string email, string password,
@@ -88,6 +91,22 @@ namespace Manager.Struct.Services
             user.SetRole(role);
             _userRepository.Update(user);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task DeleteAccount(int id)
+        {                          
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
+            {
+                throw new ServiceException(ErrorCodes.UserNotFound,
+                    $"User with id: {id} not exists.");
+            }
+            await _userService.RemoveUserAttendeesAsync(id);
+            await _userService.RemoveUserSchedulesAsync(id);
+            await _userService.RemoveUserActivitiesAsync(id);
+
+            _userRepository.Delete(user);
+            await _userRepository.Commit();     
         }
     }
 }

@@ -15,8 +15,11 @@ namespace Manager.Struct.Services
         Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query);
         Task UpdateUserAsync(int id, string name, string email, string fullName,
            string avatar, string role, string profession);
-        Task RemoveUserScheduleAsync(int id);
-        Task RemoveUserAttendeeAsync(int id);
-        Task RemoveUserAsync(int id);
+        Task RemoveUserActivitiesAsync(int id);
+        Task DeleteUserActivitiesProperlyAsync(int id);
+        Task RemoveUserSchedulesAsync(int id);
+        Task DeleteUserSchedulesProperlyAsync(int id);
+        Task RemoveUserAttendeesAsync(int id);
+        Task DeleteUserAttendeesProperlyAsync(int id);
     }
 }

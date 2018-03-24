@@ -16,15 +16,18 @@ namespace Manager.Struct.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly IActivityRepository _activityRepository;
         private readonly IAttendeeRepository _attendeeRepository;
-        private readonly IUnitOfWork _unitOfWork;     
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public UserService(IUserRepository userRepository, IScheduleRepository scheduleRepository,
-            IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork, IMapper mapper)
+            IActivityRepository activityRepository, IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
+            _activityRepository = activityRepository;
             _attendeeRepository = attendeeRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -81,7 +84,7 @@ namespace Manager.Struct.Services
             await _userRepository.Commit();
         }
 
-        public async Task RemoveUserScheduleAsync(int id)
+        public async Task RemoveUserSchedulesAsync(int id)
         {
             var schedules = await _scheduleRepository.FindByAsync(s => s.CreatorId == id);
 
@@ -92,29 +95,42 @@ namespace Manager.Struct.Services
             }
         }
 
-        public async Task RemoveUserAttendeeAsync(int id)
+        public async Task DeleteUserSchedulesProperlyAsync(int id)
+        {
+            await RemoveUserSchedulesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task RemoveUserActivitiesAsync(int id)
+        {
+            var activities = await _activityRepository.FindByAsync(a => a.CreatorId == id);
+
+            foreach (var act in activities)
+            {
+                _activityRepository.Delete(act);
+            }
+        }
+
+        public async Task DeleteUserActivitiesProperlyAsync(int id)
+        {
+            await RemoveUserActivitiesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task RemoveUserAttendeesAsync(int id)
         {
             var attendees = await _attendeeRepository.FindByAsync(a => a.UserId == id);
 
             foreach (var attendee in attendees)
             {
-                 _attendeeRepository.Delete(attendee);
+                _attendeeRepository.Delete(attendee);
             }
         }
 
-        public async Task RemoveUserAsync(int id)
+        public async Task DeleteUserAttendeesProperlyAsync(int id)
         {
-            var user = await _userRepository.GetAsync(id);
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.UserNotFound,
-                    $"User with id: {id} not exists.");
-            }
-            await RemoveUserAttendeeAsync(id);
-            await RemoveUserScheduleAsync(id);
-
-            _userRepository.Delete(user);
-            await _userRepository.Commit();
+            await RemoveUserAttendeesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

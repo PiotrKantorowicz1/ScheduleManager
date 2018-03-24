@@ -12,5 +12,6 @@ namespace Manager.Struct.Services
         Task<JsonWebToken> SignInAsync(string email, string password);
         Task ChangePasswordAsync(int userId, string currentPassword, string newPassword);
         Task ChangeRoleAsync(int userId, string role);
+        Task DeleteAccount(int id);
     }
 }
