@@ -15,9 +15,9 @@ namespace Manager.Struct.Services
         Task<PagedResult<ScheduleDto>> BrowseByCreatorAsync(BrowseSchedulesByCreator query);
         Task<PagedResult<ScheduleDto>> BrowseByTitleAsync(BrowseSchedulesByTitle query);
         Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
-            string location, int creatorId, ScheduleType type, ScheduleStatus status);
+            string location, int creatorId, string type, string status);
         Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,
-            string location, int creatorId, ScheduleType type, ScheduleStatus status);
+            string location, int creatorId, string type, string status);
         Task DeleteAsync(int id);
         Task DeleteAttendeesAsync(int id, int attendeeId);
     }

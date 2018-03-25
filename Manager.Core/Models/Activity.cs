@@ -1,5 +1,6 @@
 using System;
 using Manager.Core.Exceptions;
+using Manager.Core.Models.Types;
 
 namespace Manager.Core.Models
 {
@@ -13,9 +14,9 @@ namespace Manager.Core.Models
         public string Location { get; set; }
         public User Creator { get; set; }
         public int CreatorId { get; set; }
-        public ActivityType Type { get; set; }
-        public ActivityPriority Priority { get; set; }
-        public ActivityStatus Status { get; set; }
+        public string Type { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -36,12 +37,11 @@ namespace Manager.Core.Models
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void SetStates(ActivityType type, ActivityPriority priority, 
-            ActivityStatus status)
+        public void SetStates(string type, string priority, string status)
         {
-            Type = type;
-            Priority = priority;
-            Status = status;
+            SetType(type);
+            SetPriority(priority);
+            SetStatus(status);
         }
 
         public void SetTitle(string title)
@@ -124,27 +124,42 @@ namespace Manager.Core.Models
             Location = location;
             UpdatedAt = DateTime.UtcNow;
         }
-    }
 
-    public enum ActivityPriority
-    {
-        High = 1,
-        Medium = 2,
-        Low = 3
-    }
+        public void SetType(string type)
+        {
+            if (!ActivityType.IsValid(type))
+            {
+                throw new DomainException(ErrorCodes.InvalidActivityType,
+                    $"Invalid type: '{type}'.");
+            }
 
-    public enum ActivityStatus
-    {
-        ToMake = 1,
-        Completed = 2,
-        Canceled = 3
-    }
+            Type = type;
+            UpdatedAt = DateTime.UtcNow;
+        }
 
-    public enum ActivityType
-    {
-        Work = 1,
-        Programming = 2,
-        Private = 3,
-        Other = 4
+        public void SetStatus(string status)
+        {
+            if (!Models.Types.Status.IsValid(status))
+            {
+                
+                throw new DomainException(ErrorCodes.InvalidSatuts,
+                    $"Invalid status: '{status}'.");
+            }
+
+            Status = status;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetPriority(string priority)
+        {
+            if (!Models.Types.Priority.IsValid(priority))
+            {
+                throw new DomainException(ErrorCodes.InvalidPriority,
+                    $"Invalid priority: '{priority}'.");
+            }
+
+            Priority = priority;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

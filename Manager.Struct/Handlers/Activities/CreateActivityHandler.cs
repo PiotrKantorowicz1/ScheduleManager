@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Manager.Core.Models;
 using Manager.Struct.Commands;
 using Manager.Struct.Commands.Activities;
 using Manager.Struct.Services;

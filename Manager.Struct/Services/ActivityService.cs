@@ -72,7 +72,7 @@ namespace Manager.Struct.Services
         }
 
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
-            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
+            string location, int creatorId, string type, string priority, string status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity != null)
@@ -90,7 +90,7 @@ namespace Manager.Struct.Services
         }
 
         public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,
-            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
+            string location, int creatorId, string type, string priority, string status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)

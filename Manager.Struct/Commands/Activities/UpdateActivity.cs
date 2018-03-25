@@ -12,8 +12,8 @@ namespace Manager.Struct.Commands.Activities
         public DateTime TimeEnd { get; set; }
         public string Location { get; set; }
         public int CreatorId { get; set; }
-        public ActivityType Type { get; set; }
-        public ActivityPriority Priority { get; set; }
-        public ActivityStatus Status { get; set; }
+        public string Type { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
     }
 }

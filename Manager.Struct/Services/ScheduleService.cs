@@ -82,7 +82,7 @@ namespace Manager.Struct.Services
         }
 
         public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location,
-            int creatorId, ScheduleType type, ScheduleStatus status)
+            int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetByAsync(id);
             if (schedule != null)
@@ -92,7 +92,7 @@ namespace Manager.Struct.Services
             }
 
             schedule = new Schedule(title, description, timestart, timeEnd, location,
-                creatorId, type, status);
+                creatorId);
             await _scheduleRepository.AddAsync(schedule);
 
             foreach (var attendee in schedule.Attendees)
@@ -104,7 +104,7 @@ namespace Manager.Struct.Services
         }
 
         public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
-            int creatorId, ScheduleType type, ScheduleStatus status)
+            int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetAsync(id);
             if (schedule == null)

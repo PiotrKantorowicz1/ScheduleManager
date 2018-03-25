@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Manager.Core.Models.Types;
 
 namespace Manager.Struct.Extensions
 {
@@ -103,6 +104,67 @@ namespace Manager.Struct.Extensions
 
             var rndLocation = location[rnd];
 
+            return rndLocation;
+        }
+
+        public static string ChooseStatus()
+        {
+            var rnd = RandomExtensions.CustomRandom(3);
+            var statuses = new List<string>();
+
+            statuses.Add("");
+            statuses.Add(Status.InProgress);
+            statuses.Add(Status.ToComplete);
+            statuses.Add(Status.Completed);
+            statuses.Add(Status.Canceled);
+
+
+            var rndLocation = statuses[rnd];
+            return rndLocation;
+        }
+
+        public static string ChooseSchType()
+        {
+            var rnd = RandomExtensions.CustomRandom(4);
+            var types = new List<string>();
+
+            types.Add("");
+            types.Add(ScheduleType.Work);
+            types.Add(ScheduleType.Coffee);
+            types.Add(ScheduleType.Doctor);
+            types.Add(ScheduleType.Shopping);
+            types.Add(ScheduleType.Other);
+
+            var rndLocation = types[rnd];
+            return rndLocation;
+        }
+
+        public static string ChooseType()
+        {
+            var rnd = RandomExtensions.CustomRandom(3);
+            var types = new List<string>();
+
+            types.Add("");
+            types.Add(ActivityType.Work);
+            types.Add(ActivityType.Programming);
+            types.Add(ActivityType.Private);
+            types.Add(ActivityType.Other);
+
+            var rndLocation = types[rnd];
+            return rndLocation;
+        }
+
+        public static string ChoosePriority()
+        {
+            var rnd = RandomExtensions.CustomRandom(2);
+            var priority = new List<string>();
+
+            priority.Add("");
+            priority.Add(Priority.High);
+            priority.Add(Priority.Medium);
+            priority.Add(Priority.Low);
+
+            var rndLocation = priority[rnd];
             return rndLocation;
         }
     }
