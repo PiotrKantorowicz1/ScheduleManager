@@ -5,7 +5,7 @@ using NLog;
 
 namespace Manager.Struct.Services
 {
-    public interface IHandlerTask
+    public interface IHandlerTask 
     {
         IHandlerTask Always(Func<Task> always);
         IHandlerTask OnCustomError(Func<ManagerException, Task> onCustomError,

@@ -18,6 +18,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using System.Reflection;
 
 namespace Manager.Api
 {
