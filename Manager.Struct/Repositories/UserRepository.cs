@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository, ISqlRepository
     {
-        public UserRepository(ManagerDbContext context) : base(context)
+        public UserRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 

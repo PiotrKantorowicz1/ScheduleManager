@@ -2,6 +2,7 @@
 using Manager.Core.Models;
 using Manager.Core.Repositories;
 using Manager.Struct.DTO;
+using Manager.Struct.EF;
 using Manager.Struct.Exceptions;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,16 +14,16 @@ namespace Manager.Struct.Services
         private readonly IUserRepository _userRepository;
         private readonly IJwtHandler _jwtHandler;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RefreshTokenService(IRefreshTokenRepository refreshTokenRepository,
-            IUserRepository userRepository,
-            IJwtHandler jwtHandler,
-            IPasswordHasher<User> passwordHasher)
+        public RefreshTokenService(IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository, IJwtHandler jwtHandler,
+            IPasswordHasher<User> passwordHasher, IUnitOfWork unitOfWork)
         {
             _refreshTokenRepository = refreshTokenRepository;
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
             _passwordHasher = passwordHasher;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task CreateAsync(int userId)
@@ -34,6 +35,7 @@ namespace Manager.Struct.Services
                     $"User: '{userId}' was not found.");
             }
             await _refreshTokenRepository.CreateTokenAsync(new RefreshToken(user, _passwordHasher));
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<JsonWebToken> CreateAccessTokenAsync(string token)
@@ -55,7 +57,7 @@ namespace Manager.Struct.Services
                 throw new ServiceException(ErrorCodes.UserNotFound,
                     $"User: '{refreshToken.UserId}' was not found.");
             }
-            var jwt = _jwtHandler.CreateToken(user.Id, user.Role);
+            var jwt = _jwtHandler.CreateToken(user.SerialNumber, user.Role);
             jwt.RefreshToken = refreshToken.Token;
 
             return jwt;
@@ -70,7 +72,8 @@ namespace Manager.Struct.Services
                     "Refresh token was not found.");
             }
             refreshToken.Revoke();
-            await _refreshTokenRepository.UpdateAsync(refreshToken);
+            _refreshTokenRepository.Update(refreshToken);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

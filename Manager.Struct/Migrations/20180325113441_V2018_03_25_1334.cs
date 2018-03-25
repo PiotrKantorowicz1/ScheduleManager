@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Manager.Struct.Migrations
 {
-    public partial class V2018_03_19_2255 : Migration
+    public partial class V2018_03_25_1334 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,7 @@ namespace Manager.Struct.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Profession = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SerialNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -36,17 +37,17 @@ namespace Manager.Struct.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 19, 22, 55, 30, 516, DateTimeKind.Local)),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 25, 13, 34, 41, 676, DateTimeKind.Local)),
                     CreatorId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Priority = table.Column<int>(type: "int", nullable: false, defaultValue: 2),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: "medium"),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: "toComplete"),
                     TimeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TimeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 19, 22, 55, 30, 516, DateTimeKind.Local))
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: "work"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 25, 13, 34, 41, 676, DateTimeKind.Local))
                 },
                 constraints: table =>
                 {
@@ -65,16 +66,16 @@ namespace Manager.Struct.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 19, 22, 55, 30, 508, DateTimeKind.Local)),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 25, 13, 34, 41, 669, DateTimeKind.Local)),
                     CreatorId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: "toComplete"),
                     TimeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TimeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 19, 22, 55, 30, 511, DateTimeKind.Local))
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: "work"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2018, 3, 25, 13, 34, 41, 673, DateTimeKind.Local))
                 },
                 constraints: table =>
                 {

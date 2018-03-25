@@ -6,6 +6,7 @@ using Manager.Core.Queries.Schedules;
 using Manager.Core.Repositories;
 using Manager.Core.Types;
 using Manager.Struct.DTO;
+using Manager.Struct.EF;
 using Manager.Struct.Exceptions;
 
 namespace Manager.Struct.Services
@@ -15,14 +16,16 @@ namespace Manager.Struct.Services
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAttendeeRepository _attendeeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public ScheduleService(IScheduleRepository scheduleRepository, IUserRepository userRepository,
-            IAttendeeRepository attendeeRepository, IMapper mapper)
+            IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
             _attendeeRepository = attendeeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -56,7 +59,6 @@ namespace Manager.Struct.Services
                 var user = await _userRepository.GetAsync(attendee.UserId);
                 scheduleDetails.Attendees.Add(_mapper.Map<User, UserDto>(user));
             }
-
             return scheduleDetails;
         }
 
@@ -78,14 +80,8 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
         }
 
-        public async Task<PagedResult<ScheduleDto>> BrowseByLocationAsync(BrowseSchedulesByLocation query)
-        {
-            var filterSchedules = await _scheduleRepository.GetAllPageable(s => s.Location == query.Location, query);
-            return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
-        }
-
-        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location,
-            int creatorId, ScheduleType type, ScheduleStatus status)
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetByAsync(id);
             if (schedule != null)
@@ -95,17 +91,18 @@ namespace Manager.Struct.Services
             }
 
             schedule = new Schedule(title, description, timestart, timeEnd, location,
-                creatorId, type, status);
+                creatorId);
             await _scheduleRepository.AddAsync(schedule);
 
             foreach (var attendee in schedule.Attendees)
             {
                 schedule.Attendees.Add(new Attendee(schedule.Id, attendee.Id));
             }
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
-            int creatorId, ScheduleType type, ScheduleStatus status)
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetAsync(id);
             if (schedule == null)
@@ -123,14 +120,14 @@ namespace Manager.Struct.Services
             schedule.Type = type;
             schedule.Status = status;
 
-            await _scheduleRepository.UpdateAsync(schedule);
-
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
+            _scheduleRepository.Update(schedule);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id);
 
             foreach (var attendee in schedule.Attendees)
             {
                 await _attendeeRepository.AddAsync(new Attendee(id, attendee.Id));
             }
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -142,8 +139,9 @@ namespace Manager.Struct.Services
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
-            _scheduleRepository.DeleteAsync(schedule);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id);
+            _scheduleRepository.Delete(schedule);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAttendeesAsync(int id, int attendeeId)
@@ -155,7 +153,8 @@ namespace Manager.Struct.Services
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id && a.UserId == attendeeId);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id && a.UserId == attendeeId);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

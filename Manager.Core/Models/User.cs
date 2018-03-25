@@ -14,6 +14,7 @@ namespace Manager.Core.Models
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         public int Id { get; set; }
+        public Guid SerialNumber { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
@@ -24,7 +25,7 @@ namespace Manager.Core.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<Activity> ActivityCreated { get; set; }
+        public ICollection<Activity> ActivitiesCreated { get; set; }
         public ICollection<Schedule> SchedulesCreated { get; set; }
         public ICollection<Attendee> SchedulesAttended { get; set; }
         public ICollection<RefreshToken> Tokens { get; set; }
@@ -33,13 +34,14 @@ namespace Manager.Core.Models
         {
             SchedulesCreated = new List<Schedule>();
             SchedulesAttended = new List<Attendee>();
-            ActivityCreated = new List<Activity>();
+            ActivitiesCreated = new List<Activity>();
             Tokens = new List<RefreshToken>();
         }
 
-        public User(string name, string email, string fullName, string avatar,
+        public User(Guid serialNumber, string name, string email, string fullName, string avatar,
             string role, string profession)
-        {
+        {        
+            SerialNumber = serialNumber;   
             SetName(name);
             SetFullName(fullName);
             SetEmail(email);
@@ -134,7 +136,7 @@ namespace Manager.Core.Models
             if (profession.Length > 1000)
             {
                 throw new DomainException(ErrorCodes.InvaliProfession,
-                    "Profession field cannot be longer than 100 characters.");
+                    "Profession field cannot be longer than 1000 characters.");
             }
 
             Profession = profession;
@@ -154,6 +156,11 @@ namespace Manager.Core.Models
 
         public bool ValidatePassword(string password, IPasswordHasher<User> passwordHasher)
             => passwordHasher.VerifyHashedPassword(this, Password, password) != PasswordVerificationResult.Failed;
+
+        public void SetSchedules(List<Schedule> schedules)
+        {
+            SchedulesCreated = schedules;
+        }
 
     }
 }

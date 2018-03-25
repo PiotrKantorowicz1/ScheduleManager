@@ -6,7 +6,9 @@ using Manager.Core.Models;
 using Manager.Core.Repositories;
 using Manager.Struct.Extensions;
 using static Manager.Struct.Extensions.RandomExtensions;
+using static Manager.Struct.Extensions.RefillerExtensions;
 using NLog;
+using Manager.Struct.EF;
 
 namespace Manager.Struct.Services
 {
@@ -16,16 +18,19 @@ namespace Manager.Struct.Services
         private readonly IAccountService _accountService;
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IActivityRepository _activityRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
         public DataRefiller(IUserService userService, IAccountService accountService, 
-        IScheduleRepository scheduleRepository, IActivityRepository activityRepository)
+        IScheduleRepository scheduleRepository, IActivityRepository activityRepository,
+        IUnitOfWork unitOfWork)
         {
             _userService = userService;
             _accountService = accountService;
             _scheduleRepository = scheduleRepository;
             _activityRepository = activityRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task SeedAsync()
@@ -41,18 +46,18 @@ namespace Manager.Struct.Services
           
             Logger.Trace("Initializing data ...");
 
-            await _accountService.SignUpAsync("PiotrK", "PiotrKantorowicz", "piotr@gmail.com", "secret", "avatar_02.png", "Developer", "admin");
+            await _accountService.SignUpAsync(Guid.NewGuid(),"PiotrK", "PiotrKantorowicz", "piotr@gmail.com", "secret", "avatar_02.png", "Developer", "admin");
             Logger.Trace($"Adding user: 1");
-            await _accountService.SignUpAsync("SandraS", "Sandra Sernik", "sandra@gmail.com" , "secret", "avatar_03.jpg", "Web Designer", "editor");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "SandraS", "Sandra Sernik", "sandra@gmail.com" , "secret", "avatar_03.jpg", "Web Designer", "editor");
             Logger.Trace($"Adding user: 2");
-            await _accountService.SignUpAsync("JanuszC", "Janusz Cieslak", "janusz@gmail.com", "secret", "avatar_03.jpg", "Quality Assurance", "editor");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "JanuszC", "Janusz Cieslak", "janusz@gmail.com", "secret", "avatar_03.jpg", "Quality Assurance", "editor");
             Logger.Trace($"Adding user: 3");
-            await _accountService.SignUpAsync("Vorek", "Vorek Vox", "vortek@gmail.com", "secret", "avatar_04.jpg", "Developer", "user");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Vorek", "Vorek Vox", "vortek@gmail.com", "secret", "avatar_04.jpg", "Developer", "user");
             Logger.Trace($"Adding user: 4");
-            await _accountService.SignUpAsync("Artur", "Artut Kupczak", "artur@gmail.com", "secret", "avatar_04.jpg", "kasztan", "user");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Artur", "Artut Kupczak", "artur@gmail.com", "secret", "avatar_04.jpg", "kasztan", "user");
             Logger.Trace($"Adding user: 8");
-            await _accountService.SignUpAsync("Kamil", "Kamil Kuczkeos", "kamil@gmail.com", "secret", "avatar_01.png", "Web Designer", "user");
-            Logger.Trace($"Adding user: 6.");
+            await _accountService.SignUpAsync(Guid.NewGuid(), "Kamil", "Kamil Kuczkeos", "kamil@gmail.com", "secret", "avatar_01.png", "Web Designer", "user");
+            Logger.Trace($"Adding user: 6.");  
 
             for (var i = 1; i <= 300; i++)
             {
@@ -62,16 +67,15 @@ namespace Manager.Struct.Services
                 var r6 = CustomRandom(6);
                 var hours = CustomRandom(24);
 
-                var rndSchTitle = RefillerExtensions.SchTitle();
-                var rndTkTitle = RefillerExtensions.TkTitle();
-                var rndSchDescription = RefillerExtensions.SchDescription();
-                var rndTkDescription = RefillerExtensions.TkDescription();
-                var rndlocation = RefillerExtensions.Location();
-                var schEnum = (ScheduleType)r5;
-                var schsEnum = (ScheduleStatus)r2;
-                var tkEnum = (ActivityType)r5;
-                var tkpEnum = (ActivityPriority)r3;
-                var tksEnum = (ActivityStatus)r2;
+                var rndSchTitle = SchTitle();
+                var rndTkTitle = TkTitle();
+                var rndSchDescription = SchDescription();
+                var rndTkDescription = TkDescription();
+                var rndlocation = Location();
+                var schtype = ChooseSchType();
+                var actType = ChooseType();
+                var priority = ChoosePriority();
+                var status = ChooseStatus();
                 var timeStart = DateTime.UtcNow.AddHours(hours);
                 var timeEnd = DateTime.UtcNow.AddHours(hours);
 
@@ -81,8 +85,8 @@ namespace Manager.Struct.Services
                     Description = rndSchDescription,
                     Location = rndlocation,
                     CreatorId = r6,
-                    Status = schsEnum,
-                    Type = schEnum,
+                    Status = status,
+                    Type = schtype,
                     TimeStart = timeStart,
                     TimeEnd = timeEnd,
                     Attendees = new List<Attendee>
@@ -103,14 +107,15 @@ namespace Manager.Struct.Services
                     Description = rndTkDescription,
                     Location = rndlocation,
                     CreatorId = r6,
-                    Status = tksEnum,
-                    Type = tkEnum,
-                    Priority = tkpEnum,
+                    Status = status,
+                    Type = actType,
+                    Priority = priority,
                     TimeStart = timeStart,
                     TimeEnd = timeEnd                  
                 };
 
-                await _activityRepository.AddAsync(activity);
+                await _activityRepository.AddAsync(activity);              
+                await _unitOfWork.SaveChangesAsync();
 
                 Logger.Trace($"Adding Task{i}");
             }

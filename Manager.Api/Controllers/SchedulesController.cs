@@ -3,120 +3,71 @@ using Manager.Struct.Services;
 using System.Threading.Tasks;
 using Manager.Core.Models;
 using Manager.Core.Queries.Schedules;
+using Manager.Struct.Commands;
+using Manager.Struct.Commands.Schedules;
+using Manager.Api.Framework;
 
 namespace Manager.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class SchedulesController : Controller
+    public class SchedulesController : BaseController
     {
         private readonly IScheduleService _scheduleSerivce;
 
-        public SchedulesController(IScheduleService scheduleSerivce)
+        public SchedulesController(IScheduleService scheduleSerivce,
+            ICommandDispatcher commandDispatcher)
+            : base(commandDispatcher)
         {
             _scheduleSerivce = scheduleSerivce;
         }
 
-        [HttpGet]
-        [Route("GetAllPageable")]
-        public async Task<IActionResult> Get()
-        {
-            var activity = await _scheduleSerivce.BrowseAsync();
-
-            return Json(activity);
-        }
-
-        [HttpGet]
-        [Route("FilterByCreator/{creatorId}")]
-        public async Task<IActionResult> Get(BrowseSchedulesByCreator query)
-        {
-            var users = await _scheduleSerivce.BrowseByCreatorAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
-        [Route("FilterByTitle/{title}")]
-        public async Task<IActionResult> Get(BrowseSchedulesByTitle query)
-        {
-            var users = await _scheduleSerivce.BrowseByTitleAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
-        [Route("FilterByLocation/{location}")]
-        public async Task<IActionResult> Get(BrowseSchedulesByLocation query)
-        {
-            var users = await _scheduleSerivce.BrowseByLocationAsync(query);
-
-            return Json(users);
-        }
-
-        [HttpGet]
-        [Route("Get/{id}")]
+        [HttpGet("Get/{id}")]
         public async Task<IActionResult> Get(int id)
-        {
-            var schedule = await _scheduleSerivce.GetAsync(id);
+            => Single(await _scheduleSerivce.GetAsync(id), x => x.Id == id || IsAdmin);
 
-            if (schedule == null)
-            {
-                NotFound();
-            }
-
-            return Json(schedule);
-        }
-
-        [HttpGet]
-        [Route("{id}/Details")]
+        [HttpGet("{id}/Details")]
         public async Task<IActionResult> GetScheduleDetails(int id)
+            => Single(await _scheduleSerivce.GetScheduleDetailsAsync(id), x => x.Id == id || IsAdmin);
+
+        [AdminAuth]
+        [HttpGet("GetAllPageable")]
+        public async Task<IActionResult> GetAllPageable()
+            => Collection(await _scheduleSerivce.BrowseAsync());
+
+        [HttpGet("FilterByCreator")]
+        public async Task<IActionResult> FilterByCreator([FromQuery]BrowseSchedulesByCreator query)
+            => Collection(await _scheduleSerivce.BrowseByCreatorAsync(query));
+
+        [AdminAuth]
+        [HttpGet("FilterByTitle")]
+        public async Task<IActionResult> FilterByTitle([FromQuery]BrowseSchedulesByTitle query)
+            => Collection(await _scheduleSerivce.BrowseByTitleAsync(query));
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody]CreateSchedule command)
         {
-            var scheduleDetails = await _scheduleSerivce.GetScheduleDetailsAsync(id);
-
-            if (scheduleDetails == null)
-            {
-                NotFound();
-            }
-
-            return Json(scheduleDetails);
+            await DispatchAsync(command);
+            return Content($"Successfully created schedule with title: '{command.Title}'");
         }
 
-        [HttpPost]
-        [Route("Create")]
-        public async Task<IActionResult> Create([FromBody]Schedule schedule)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Put(UpdateSchedule command)
         {
-            await _scheduleSerivce.CreateAsync(schedule.Id, schedule.Title, schedule.Description, schedule.TimeStart, 
-                schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
-
-            return Created($"users/{schedule.Title}", null);
+            await DispatchAsync(command);
+            return Content($"Successfully updated schedule with title: '{command.Title}'");
         }
 
-        [HttpPut]
-        [Route("Update/{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]Schedule schedule)
-        {
-            await _scheduleSerivce.UpdateAsync(id, schedule.Title, schedule.Description, schedule.TimeStart,
-                schedule.TimeEnd, schedule.Location, schedule.CreatorId, schedule.Type, schedule.Status);
-
-            return NoContent();
-        }
-
-        [HttpDelete]
-        [Route("Remove/{id}")]
+        [HttpDelete("Remove/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _scheduleSerivce.DeleteAsync(id);
-
-            return NoContent();
+            await DispatchAsync(new DeleteSchedule(id));
+            return Content($"Successfully deleted schedule with id: '{id}'");
         }
 
-        [HttpDelete]
-        [Route("Remove/{ScheduleId}/Attendee/{AttendeeId}")]
-        public async Task<IActionResult> Delete(int id, int attendeeId)
+        [HttpDelete("Remove/{scheduleId}/Attendee/{attendeeId}")]
+        public async Task<IActionResult> Delete(int scheduleId, int attendeeId)
         {
-            await _scheduleSerivce.DeleteAttendeesAsync(id, attendeeId);
-
+            await DispatchAsync(new DeleteScheduleAttendees(scheduleId, attendeeId));
             return NoContent();
-
         }
     }
 }

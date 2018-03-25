@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Manager.Struct.Services
 {
-    public interface IHandlerTaskRunner
+    public interface IHandlerTaskRunner 
     {
         IHandlerTask Run(Func<Task> runAsync);
     }

@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class RefreshTokenRepository : RepositoryBase<RefreshToken>, IRefreshTokenRepository, ISqlRepository
     {
-        public RefreshTokenRepository(ManagerDbContext context) : base(context)
+        public RefreshTokenRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Manager.Struct.Repositories
         public async Task CreateTokenAsync(RefreshToken token)
             => await AddAsync(token);
 
-        public async Task UpdateTokenAsync(RefreshToken token)
-            => await UpdateAsync(token);
+        public void UpdateTokenAsync(RefreshToken token)
+            => Update(token);
     }
 }

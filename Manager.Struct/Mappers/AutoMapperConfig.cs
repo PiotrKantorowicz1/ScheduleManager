@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Manager.Core.Models;
+using Manager.Core.Models.Types;
 using Manager.Struct.DTO;
 
 namespace Manager.Struct.Mappers
@@ -28,9 +29,9 @@ namespace Manager.Struct.Mappers
                     .ForMember(vm => vm.Type, map =>
                         map.MapFrom(s => s.Type.ToString()))
                     .ForMember(vm => vm.Statuses, map =>
-                        map.UseValue(Enum.GetNames(typeof(ScheduleStatus)).ToArray()))
+                        map.UseValue(Status.Statuses))
                     .ForMember(vm => vm.Types, map =>
-                        map.UseValue(Enum.GetNames(typeof(ScheduleType)).ToArray()));
+                        map.UseValue(ScheduleType.Types));
                 
                 cfg.CreateMap<Activity, ActivityDto>()
                     .ForMember(vm => vm.Creator,
@@ -46,15 +47,11 @@ namespace Manager.Struct.Mappers
                     .ForMember(vm => vm.Priorities, map =>
                         map.MapFrom(t => t.Type.ToString()))
                     .ForMember(vm => vm.Statuses, map =>
-                        map.UseValue(Enum.GetNames(typeof(ActivityStatus)).ToArray()))
-                    .ForMember(vm => vm.Types, map =>
-                        map.UseValue(Enum.GetNames(typeof(ActivityType)).ToArray()))
+                        map.UseValue(Status.Statuses))
+                     .ForMember(vm => vm.Types, map =>
+                         map.UseValue(ActivityType.Types))
                     .ForMember(vm => vm.Priorities, map =>
-                        map.UseValue(Enum.GetNames(typeof(ActivityPriority)).ToArray()));
-
-                cfg.CreateMap<User, UserDto>()
-                    .ForMember(vm => vm.SchedulesCreated,
-                        map => map.MapFrom(u => u.SchedulesCreated.Count()));
+                        map.UseValue(Priority.Priorities));
 
                 cfg.CreateMap<ScheduleDto, Schedule>()                  
                     .ForMember(s => s.Creator, map => map.UseValue((Schedule)null))
