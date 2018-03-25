@@ -18,80 +18,66 @@ namespace Manager.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        [Route("Get/{id}")]
+        [HttpGet("Get/{id}")]
         public async Task<IActionResult> Get(int id)
             => Single(await _userService.GetAsync(id), x => x.Id == id || IsAdmin);
 
-        [HttpGet]
-        [Route("GetByEmail/{email}")]
+        [HttpGet("GetByEmail/{email}")]
         public async Task<IActionResult> Get(string email)
             => Single(await _userService.GetByEmailAsync(email), x => x.Email == email || IsAdmin);
 
-        [HttpGet]
+ 
         [AdminAuth]
-        [Route("GetSerialNumber/{email}")]
+        [HttpGet("GetSerialNumber/{email}")]
         public async Task<IActionResult> GetSerialNumber(string email)
             => Single(await _userService.GetSerialNumerAsync(email));
 
-        [HttpGet]
-        [Route("GetRole/{email}")]
+        [HttpGet("GetRole/{email}")]
         public async Task<IActionResult> GetRole(string email)
             => Single(await _userService.GetUserRoleAsync(email));
 
-        [HttpGet]
-        [Route("GetInRole/{email}")]
+        [HttpGet("GetInRole/{email}")]
         public async Task<IActionResult> IsUserInRole(string email)
             => Single(await _userService.IsUserInRoleAsync(email));
 
-        [HttpGet]
         [AdminAuth]
-        [Route("GetAllPageable")]
+        [HttpGet("GetAllPageable")]
         public async Task<IActionResult> GetAllPageable()
             => Collection(await _userService.BrowseAsync());
 
-        [HttpGet]
         [AdminAuth]
-        [Route("FilterByUserRole")]
+        [HttpGet("FilterByUserRole")]
         public async Task<IActionResult> FilterByUserRole([FromQuery] BrowseUsersByRole query)
             => Collection(await _userService.BrowseByRoleAsync(query));
 
-        [HttpPut]
-        [Route("Update")]
+        [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateUser command)
         {
             await DispatchAsync(command);
-
             return Content($"Succesfully updated user with Name: '{command.Name}'");
         }
 
-        [HttpDelete]
         [AdminAuth]
-        [Route("Activities/{id}")]
+        [HttpDelete("Activities/{id}")]
         public async Task<IActionResult> DeleteActivities(int id)
         {
             await DispatchAsync(new RemoveUserActivities(id));
-
             return Content($"Successfully delete activitivies");
         }
 
-        [HttpDelete]
         [AdminAuth]
-        [Route("Schedules/{id}")]
+        [HttpDelete("Schedules/{id}")]
         public async Task<IActionResult> DeleteSchedules(int id)
         {
             await DispatchAsync(new RemoveUserSchedules(id));
-
             return Content($"Successfully delete schedules");
         }
 
-        [HttpDelete]
         [AdminAuth]
-        [Route("Attendees/{id}")]
+        [HttpDelete("Attendees/{id}")]
         public async Task<IActionResult> DeleteAttendees(int id)
         {
             await DispatchAsync(new RemoveUserAttendees(id));
-
             return Content($"Successfully delete attendees");
         }
     }

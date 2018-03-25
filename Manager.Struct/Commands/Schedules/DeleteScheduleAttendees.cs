@@ -5,12 +5,12 @@ namespace Manager.Struct.Commands.Schedules
 {
     public class DeleteScheduleAttendees : ICommand
     {
-        public int Id { get; set; }
+        public int ScheduleId { get; set; }
         public int AttendeeId { get; set; }
         
-        public DeleteScheduleAttendees(int id, int attendeeId)
+        public DeleteScheduleAttendees(int scheduleId, int attendeeId)
         {
-            Id = id;
+            ScheduleId = scheduleId;
             AttendeeId = attendeeId;
         }
     }

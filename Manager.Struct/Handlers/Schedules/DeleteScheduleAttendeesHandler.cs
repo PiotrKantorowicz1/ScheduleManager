@@ -17,7 +17,7 @@ namespace Manager.Struct.Handlers.Schedules
 
         public async Task HandleAsync(DeleteScheduleAttendees command)
         {
-            await _scheduleService.DeleteAttendeesAsync(command.Id, command.AttendeeId);
+            await _scheduleService.DeleteAttendeesAsync(command.ScheduleId, command.AttendeeId);
         }
     }
 }
