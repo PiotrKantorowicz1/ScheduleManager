@@ -10,7 +10,6 @@ namespace Manager.Core.Models.Types
         public const string Shopping = "shopping";
         public const string Other = "other";
 
-
         public static List<string> Types = new List<string>
         {
             Work,

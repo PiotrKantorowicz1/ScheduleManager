@@ -59,7 +59,6 @@ namespace Manager.Struct.Services
                 var user = await _userRepository.GetAsync(attendee.UserId);
                 scheduleDetails.Attendees.Add(_mapper.Map<User, UserDto>(user));
             }
-
             return scheduleDetails;
         }
 
@@ -81,8 +80,8 @@ namespace Manager.Struct.Services
             return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
         }
 
-        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location,
-            int creatorId, string type, string status)
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetByAsync(id);
             if (schedule != null)
@@ -99,12 +98,11 @@ namespace Manager.Struct.Services
             {
                 schedule.Attendees.Add(new Attendee(schedule.Id, attendee.Id));
             }
-
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
-            int creatorId, string type, string status)
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
         {
             var schedule = await _scheduleRepository.GetAsync(id);
             if (schedule == null)
@@ -129,7 +127,6 @@ namespace Manager.Struct.Services
             {
                 await _attendeeRepository.AddAsync(new Attendee(id, attendee.Id));
             }
-
             await _unitOfWork.SaveChangesAsync();
         }
 

@@ -14,6 +14,7 @@ namespace Manager.Core.Models.Types
             Medium,
             Low
         };
+        
         public static bool IsValid(string priority)
         {
             if (string.IsNullOrWhiteSpace(priority))
