@@ -25,7 +25,6 @@ namespace Manager.Api.Controllers
         [HttpGet("GetByEmail/{email}")]
         public async Task<IActionResult> Get(string email)
             => Single(await _userService.GetByEmailAsync(email), x => x.Email == email || IsAdmin);
-
  
         [AdminAuth]
         [HttpGet("GetSerialNumber/{email}")]
