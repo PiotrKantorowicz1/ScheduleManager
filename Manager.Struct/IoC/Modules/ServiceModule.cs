@@ -1,6 +1,9 @@
 using System.Reflection;
 using Autofac;
+using Manager.Core.Models;
+using Manager.Struct.EF;
 using Manager.Struct.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Manager.Struct.IoC.Modules
 {
@@ -8,7 +11,7 @@ namespace Manager.Struct.IoC.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = typeof(SqlModule)
+            var assembly = typeof(ServiceModule)
                 .GetTypeInfo()
                 .Assembly;
 
@@ -17,8 +20,16 @@ namespace Manager.Struct.IoC.Modules
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<Crypton>()
-                .As<ICrypton>()
+            builder.RegisterType<JwtHandler>()
+                .As<IJwtHandler>()
+                .SingleInstance();
+
+            builder.RegisterType<PasswordHasher<User>>()
+                .As<IPasswordHasher<User>>()
+                .SingleInstance();
+
+            builder.RegisterType<ManagerDbContext>()
+                .As<IUnitOfWork>()
                 .SingleInstance();
         }
     }

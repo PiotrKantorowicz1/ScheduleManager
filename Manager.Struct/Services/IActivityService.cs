@@ -11,14 +11,13 @@ namespace Manager.Struct.Services
     {
         Task<ActivityDto> GetAsync(int id);
         Task<ActivityDetailsDto> GetDetailsAsync(int id);
-        Task<PagedResult<ActivityDto>> GetAllPageable();
-        Task<PagedResult<ActivityDto>> FilterByCreator(BrowseActivitiesByCreator query);
-        Task<PagedResult<ActivityDto>> FilterByTitle(BrowseActivitiesByTitle query);
-        Task<PagedResult<ActivityDto>> FilterByLocation(BrowseActivitiesByLocation query);
+        Task<PagedResult<ActivityDto>> BrowseAsync();
+        Task<PagedResult<ActivityDto>> BrowseByCreatorAsync(BrowseActivitiesByCreator query);
+        Task<PagedResult<ActivityDto>> BrowseByTitleAsync(BrowseActivitiesByTitle query);
         Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
-            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status);
+            string location, int creatorId, string type, string priority, string status);
         Task UpdateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
-            string location, int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status);
+            string location, int creatorId, string type, string priority, string status);
         Task DeleteAsync(int id);
     }
 }

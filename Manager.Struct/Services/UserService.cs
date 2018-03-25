@@ -7,6 +7,8 @@ using Manager.Struct.Exceptions;
 using System.Threading.Tasks;
 using Manager.Core.Queries.Users;
 using Manager.Core.Types;
+using System;
+using Manager.Struct.EF;
 
 namespace Manager.Struct.Services
 {
@@ -14,17 +16,20 @@ namespace Manager.Struct.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly IActivityRepository _activityRepository;
         private readonly IAttendeeRepository _attendeeRepository;
-        private readonly ICrypton _crypton;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public UserService(IUserRepository userRepository, IScheduleRepository scheduleRepository,
-            IAttendeeRepository attendeeRepository, ICrypton crypton, IMapper mapper)
+            IActivityRepository activityRepository, IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
+            _activityRepository = activityRepository;
             _attendeeRepository = attendeeRepository;
-            _crypton = crypton;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -34,145 +39,122 @@ namespace Manager.Struct.Services
             return _mapper.Map<User, UserDto>(user);
         }
 
-        public async Task<UserDto> GetByEmail(string email)
+        public async Task<UserDto> GetByEmailAsync(string email)
         {
             var user = await _userRepository.GetSingleAsync(u => u.Email == email);
             return _mapper.Map<User, UserDto>(user);
         }
 
-        public async Task<IEnumerable<UserDto>> BrowseUsersAsync()
+        public async Task<Guid> GetSerialNumerAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            return user.SerialNumber;
+        }
+
+        public async Task<string> GetUserRoleAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            return user.Role;
+        }
+        public async Task<bool> IsUserInRoleAsync(string email)
+        {
+            var user = await GetByEmailAsync(email);
+            var role = user.Role;
+
+            if (role == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<IEnumerable<UserDto>> GetAllAsync()
         {
             var users = await _userRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(users);
         }
 
-        public async Task<PagedResult<UserDto>> GetAllPegeable()
+        public async Task<PagedResult<UserDto>> BrowseAsync()
         {
             var users = await _userRepository.GetAllPageable();
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(users);
         }
 
-        public async Task<PagedResult<UserDto>> FilterByProfession(BrowseUsersByProfession query)
-        {
-            var filterUsers = await _userRepository.GetAllPageable(u => u.Profession == query.Profession, query);
-            return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
-        }
-
-        public async Task<PagedResult<UserDto>> FilterByRole(BrowseUsersByRole query)
+        public async Task<PagedResult<UserDto>> BrowseByRoleAsync(BrowseUsersByRole query)
         {
             var filterUsers = await _userRepository.GetAllPageable(u => u.Role == query.Role, query);
             return _mapper.Map<PagedResult<User>, PagedResult<UserDto>>(filterUsers);
         }
 
-        public async Task<bool> FindUserInRole(int id)
-        {
-            var user = await _userRepository.GetSingleAsync(u => u.Id == id);
-            var userInRole = user.Role != null;
-
-            return userInRole;
-        }
-
-        public async Task LoginAsync(string email, string password)
-        {
-            var user = await _userRepository.GetAsync(email);
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.InvalidCredentials,
-                    "Invalid credentials");
-            }
-
-            var hash = _crypton.GetHash(password, user.Salt);
-            if (user.Password == hash)
-            {
-                return;
-            }
-            throw new ServiceException(ErrorCodes.InvalidCredentials,
-                "Invalid credentials");
-        }
-
-        public async Task<UserDto> RegisterAsync(string name, string email, string fullName,
-            string password,string avatar, string role, string profession)
-        {
-            var user = await _userRepository.GetAsync(name);
-
-            if (user != null)
-            {
-                throw new ServiceException(ErrorCodes.NameInUse,
-                    $"User with name: '{user.Name}' already exists.");
-            }
-
-            var salt = _crypton.GetSalt(password);
-            var hash = _crypton.GetHash(password, salt);
-
-            user = new User(name, email, fullName, hash, avatar, role, salt, profession);
-            await _userRepository.AddAsync(user);
-
-            return _mapper.Map<User, UserDto>(user);
-        }
-
         public async Task UpdateUserAsync(int id, string name, string email, string fullName,
-            string password, string avatar, string role, string profession)
+           string avatar, string role, string profession)
         {
             var user = await _userRepository.GetAsync(id);
+
             if (user == null)
             {
                 throw new ServiceException(ErrorCodes.InvalidName,
                     $"User with id: {name} not exists.");
             }
 
-            var salt = _crypton.GetSalt(password);
-
             user.SetName(name);
             user.SetEmail(email);
             user.SetFullName(fullName);
-            user.SetPassword(password, salt);
             user.SetAvatar(avatar);
             user.SetRole(role);
-            user.SetProfession(profession);          
+            user.SetProfession(profession);
 
-            await _userRepository.UpdateAsync(user);
-        }      
+            _userRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
-        public async Task RemoveUserSchedule(int id)
+        public async Task RemoveUserSchedulesAsync(int id)
         {
             var schedules = await _scheduleRepository.FindByAsync(s => s.CreatorId == id);
 
             foreach (var schedule in schedules)
             {
-                _attendeeRepository.DeleteWhereAsync(a => a.Id == id);
-                _scheduleRepository.DeleteAsync(schedule);
+                _attendeeRepository.DeleteWhere(a => a.ScheduleId == schedule.Id);
+                _scheduleRepository.Delete(schedule);
             }
-
-            await _userRepository.Commit();
         }
 
-        public async Task RemoveUserAttendee(int id)
+        public async Task DeleteUserSchedulesProperlyAsync(int id)
         {
-            var attendees = await _attendeeRepository.FindByAsync(a => a.Id == id);
+            await RemoveUserSchedulesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task RemoveUserActivitiesAsync(int id)
+        {
+            var activities = await _activityRepository.FindByAsync(a => a.CreatorId == id);
+
+            foreach (var act in activities)
+            {
+                _activityRepository.Delete(act);
+            }
+        }
+
+        public async Task DeleteUserActivitiesProperlyAsync(int id)
+        {
+            await RemoveUserActivitiesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task RemoveUserAttendeesAsync(int id)
+        {
+            var attendees = await _attendeeRepository.FindByAsync(a => a.UserId == id);
 
             foreach (var attendee in attendees)
             {
-                _attendeeRepository.DeleteAsync(attendee);
+                _attendeeRepository.Delete(attendee);
             }
-
-            await _userRepository.Commit();
         }
 
-        public async Task RemoveUserAsync(int id)
+        public async Task DeleteUserAttendeesProperlyAsync(int id)
         {
-            var user = await _userRepository.GetAsync(id);
-            if (user == null)
-            {
-                throw new ServiceException(ErrorCodes.UserNotFound,
-                    $"User with id: {id} not exists.");
-            }
-
-            await RemoveUserAttendee(id);
-            await RemoveUserSchedule(id);
-
-             _userRepository.DeleteAsync(user);
-
-            await _userRepository.Commit();
+            await RemoveUserAttendeesAsync(id);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

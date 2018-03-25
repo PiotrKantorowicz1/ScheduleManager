@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Manager.Core.Exceptions;
+using Manager.Core.Models.Types;
 
 namespace Manager.Core.Models
 {
     public class Schedule
     {
-        public Schedule()
-        {
-            Attendees = new List<Attendee>();
-        }
-
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -19,15 +15,20 @@ namespace Manager.Core.Models
         public string Location { get; set; }
         public User Creator { get; set; }
         public int CreatorId { get; set; }
-        public ScheduleType Type { get; set; }
-        public ScheduleStatus Status { get; set; }
+        public string Type { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<Attendee> Attendees { get; set; }
 
+        public Schedule()
+        {
+            Attendees = new List<Attendee>();
+        }
+
         public Schedule(string title, string description, DateTime timestart, DateTime timeEnd,
-            string location, int creatorId, ScheduleType type, ScheduleStatus status)
+            string location, int creatorId)
         {
             SetTitle(title);
             SetDescription(description);
@@ -35,8 +36,12 @@ namespace Manager.Core.Models
             SetTimeEnd(timeEnd);
             SetCreator(creatorId);
             SetLocation(location);
-            Type = type;
-            Status = status;
+        }
+
+        public void SetStates(string type, string status)
+        {
+            SetScheduleType(type);
+            SetStatus(status);
         }
 
         public void SetTitle(string title)
@@ -119,20 +124,30 @@ namespace Manager.Core.Models
             Location = location;
             UpdatedAt = DateTime.UtcNow;
         }
-    }
 
-    public enum ScheduleStatus
-    {
-        Valid = 1,
-        Cancelled = 2
-    }
+        public void SetStatus(string status)
+        {
+            if (!Models.Types.Status.IsValid(status))
+            {
+                throw new DomainException(ErrorCodes.InvalidSatuts,
+                    $"Invalid status: '{status}'.");
+            }
 
-    public enum ScheduleType 
-    {
-        Work = 1,
-        Coffee = 2,
-        Doctor = 3,
-        Shopping = 4,
-        Other = 5
+            Status = status;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetScheduleType(string type)
+        {
+            if (!Models.Types.Status.IsValid(type))
+            {
+                throw new DomainException(ErrorCodes.InvalidScheduleType,
+                    $"Invalid status: '{type}'.");
+            }
+
+            Type = type;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
     }
 }

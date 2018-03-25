@@ -1,95 +1,73 @@
 using Microsoft.AspNetCore.Mvc;
 using Manager.Struct.Services;
 using System.Threading.Tasks;
-using Manager.Struct.DTO;
+using Manager.Core.Models;
+using Manager.Core.Queries.Schedules;
+using Manager.Struct.Commands;
+using Manager.Struct.Commands.Schedules;
+using Manager.Api.Framework;
 
 namespace Manager.Api.Controllers
 {
-    [Route("api/[controller]")]
-    public class SchedulesController : Controller
+    public class SchedulesController : BaseController
     {
         private readonly IScheduleService _scheduleSerivce;
 
-        public SchedulesController(IScheduleService scheduleSerivce)
+        public SchedulesController(IScheduleService scheduleSerivce,
+            ICommandDispatcher commandDispatcher)
+            : base(commandDispatcher)
         {
             _scheduleSerivce = scheduleSerivce;
         }
 
-        public async Task<IActionResult> Get()
-        {
-            var schedules = await _scheduleSerivce.BrowseAsync();
-
-            return Json(schedules);
-        }
-
-        [HttpGet("{id}", Name = "GetSchedule")]
+        [HttpGet("Get/{id}")]
         public async Task<IActionResult> Get(int id)
-        {
-            var schedule = await _scheduleSerivce.GetAsync(id);
+            => Single(await _scheduleSerivce.GetAsync(id), x => x.Id == id || IsAdmin);
 
-            if (schedule == null)
-            {
-                NotFound();
-            }
-
-            return Json(schedule);
-        }
-
-        [HttpGet("{id}/details", Name = "GetScheduleDetails")]
+        [HttpGet("id}/Details")]
         public async Task<IActionResult> GetScheduleDetails(int id)
+            => Single(await _scheduleSerivce.GetScheduleDetailsAsync(id), x => x.Id == id || IsAdmin);
+
+        [AdminAuth]
+        [HttpGet("GetAllPageable")]
+        public async Task<IActionResult> GetAllPageable()
+            => Collection(await _scheduleSerivce.BrowseAsync());
+
+        [HttpGet("FilterByCreator")]
+        public async Task<IActionResult> FilterByCreator([FromQuery]BrowseSchedulesByCreator query)
+            => Collection(await _scheduleSerivce.BrowseByCreatorAsync(query));
+
+        [AdminAuth]
+        [HttpGet("FilterByTitle")]
+        public async Task<IActionResult> FilterByTitle([FromQuery]BrowseSchedulesByTitle query)
+            => Collection(await _scheduleSerivce.BrowseByTitleAsync(query));
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody]CreateSchedule command)
         {
-            var scheduleDetails = await _scheduleSerivce.GetScheduleDetailsAsync(id);
-
-            if (scheduleDetails == null)
-            {
-                NotFound();
-            }
-
-            return Json(scheduleDetails);
+            await DispatchAsync(command);
+            return Content($"Successfully created schedule with title: '{command.Title}'");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(ScheduleDto schedule)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Put(UpdateSchedule command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var newSchedule = await _scheduleSerivce.CreateAsync(schedule);
-
-            return Json(newSchedule);
+            await DispatchAsync(command);
+            return Content($"Successfully updated schedule with title: '{command.Title}'");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _scheduleSerivce.EditAsync(id);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}", Name = "RemoveSchedule")]
+        [HttpDelete("Remove/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _scheduleSerivce.DeleteAsync(id);
-
-            return NoContent();
-
+            await DispatchAsync(new DeleteSchedule(id));
+            return Content($"Successfully deleted schedule with id: '{id}'");
         }
 
-        [HttpDelete("{id}/removeattendee/{attendee}")]
-        public async Task<IActionResult> Delete(int id, int attendee)
+        [HttpDelete("Remove/{scheduleId}/Attendee/{attendeeId}")]
+        public async Task<IActionResult> Delete(int scheduleId, int attendeeId)
         {
-            await _scheduleSerivce.DeleteAttendeesAsync(id, attendee);
-
+            await DispatchAsync(new DeleteScheduleAttendees(scheduleId, attendeeId));
             return NoContent();
-
         }
     }
 }

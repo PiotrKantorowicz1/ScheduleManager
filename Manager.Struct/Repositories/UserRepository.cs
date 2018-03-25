@@ -7,7 +7,7 @@ namespace Manager.Struct.Repositories
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository, ISqlRepository
     {
-        public UserRepository(ManagerDbContext context) : base(context)
+        public UserRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 
@@ -16,5 +16,8 @@ namespace Manager.Struct.Repositories
 
         public async Task<User> GetAsync(string name)
             => await GetSingleAsync(u => u.Name == name);
+
+        public async Task<User> GetByEmailAsync(string email)
+            => await GetSingleAsync(u => u.Email == email);
     }
 }

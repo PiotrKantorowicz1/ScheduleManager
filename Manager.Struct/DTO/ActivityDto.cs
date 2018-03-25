@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Manager.Struct.DTO.Validations;
 
 namespace Manager.Struct.DTO
 {
-    public class ActivityDto : IValidatableObject
+    public class ActivityDto 
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -21,13 +17,5 @@ namespace Manager.Struct.DTO
         public string Status { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var validator = new ActivityDtoValidator();
-            var result = validator.Validate(this);
-            return result.Errors.Select(item => 
-                new ValidationResult(item.ErrorMessage, new[] { item.PropertyName }));
-        }
     }
 }

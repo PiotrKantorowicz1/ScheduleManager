@@ -2,15 +2,17 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Manager.Core.Models;
+using Manager.Core.Models.Types;
 
 namespace Manager.Struct.EF
 {
-    public class ManagerDbContext : DbContext
+    public class ManagerDbContext : DbContext, IUnitOfWork
     {
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Activity> Activities { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Attendee> Attendees { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public ManagerDbContext(DbContextOptions options) : base(options)
         {
@@ -44,7 +46,7 @@ namespace Manager.Struct.EF
 
             scheduleBuilder
               .Property(s => s.Status)
-                .HasDefaultValue(ScheduleStatus.Valid);
+                .HasDefaultValue(Status.ToComplete);
 
             scheduleBuilder
                 .HasOne(s => s.Creator)
@@ -104,15 +106,28 @@ namespace Manager.Struct.EF
 
             activityBuilder
                 .Property(t => t.Status)
-                .HasDefaultValue(ActivityStatus.ToMake);
+                .HasDefaultValue(Status.ToComplete);
 
             activityBuilder
                 .Property(t => t.Priority)
-                .HasDefaultValue(ActivityPriority.Medium);
+                .HasDefaultValue(Priority.Medium);
 
             activityBuilder
                 .HasOne(t => t.Creator)
-                .WithMany(c => c.ActivityCreated);
+                .WithMany(c => c.ActivitiesCreated);
+
+            var tokensBuilder = builder.Entity<RefreshToken>();
+
+            tokensBuilder.ToTable("Tokens");
+
+            tokensBuilder
+                .Property(t => t.UserId)
+                .IsRequired();
+
+            tokensBuilder
+                .HasOne(t => t.User)
+                .WithMany(u => u.Tokens)
+                .HasForeignKey(t => t.UserId);
         }
     }
 }

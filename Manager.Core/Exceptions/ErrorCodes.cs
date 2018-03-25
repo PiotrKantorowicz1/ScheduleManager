@@ -14,5 +14,11 @@
         public static string InvalidTimeStart => "invalid_timeStart";       
         public static string InvalidTimeEnd => "invalid_timeEnd";       
         public static string InvalidLocation => "invalid_location";         
+        public static string InvalidRefreshToken => "invalid_refreshToken";
+        public static string InvalidCredentials => "invalid_credentials";
+        public static string InvalidActivityType => "invalid_activityType";
+        public static string InvalidScheduleType => "invalid_scheduleTypes";
+        public static string InvalidSatuts => "invalid_status";
+        public static string InvalidPriority => "invalid_priority";
     }
 }

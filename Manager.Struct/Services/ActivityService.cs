@@ -6,6 +6,7 @@ using Manager.Core.Queries.Activities;
 using Manager.Core.Repositories;
 using Manager.Core.Types;
 using Manager.Struct.DTO;
+using Manager.Struct.EF;
 using Manager.Struct.Exceptions;
 
 namespace Manager.Struct.Services
@@ -13,11 +14,14 @@ namespace Manager.Struct.Services
     public class ActivityService : IActivityService
     {
         private readonly IActivityRepository _activityRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ActivityService(IActivityRepository activityRepository, IMapper mapper)
+        public ActivityService(IActivityRepository activityRepository, IMapper mapper,
+            IUnitOfWork unitOfWork)
         {
             _activityRepository = activityRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -27,7 +31,7 @@ namespace Manager.Struct.Services
 
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
                     $"task with this id: {id} not exists.");
             }
 
@@ -49,53 +53,50 @@ namespace Manager.Struct.Services
             return activityDetails;
         }
 
-        public async Task<PagedResult<ActivityDto>> GetAllPageable()
+        public async Task<PagedResult<ActivityDto>> BrowseAsync()
         {
             var activities = await _activityRepository.GetAllPageable();
             return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(activities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByCreator(BrowseActivitiesByCreator query)
+        public async Task<PagedResult<ActivityDto>> BrowseByCreatorAsync(BrowseActivitiesByCreator query)
         {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.CreatorId == query.CreatorId, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+            var filtersActivities = await _activityRepository.GetAllPageable(a => a.CreatorId == query.CreatorId, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByTitle(BrowseActivitiesByTitle query)
+        public async Task<PagedResult<ActivityDto>> BrowseByTitleAsync(BrowseActivitiesByTitle query)
         {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Title == query.Title, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
+            var filtersActivities = await _activityRepository.GetAllPageable(a => a.Title == query.Title, query);
+            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivities);
         }
 
-        public async Task<PagedResult<ActivityDto>> FilterByLocation(BrowseActivitiesByLocation query)
-        {
-            var filtersActivity = await _activityRepository.GetAllPageable(a => a.Location == query.Location, query);
-            return _mapper.Map<PagedResult<Activity>, PagedResult<ActivityDto>>(filtersActivity);
-        }
-
-        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, string location, int creatorId,
-            ActivityType type, ActivityPriority priority, ActivityStatus status)
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd,
+            string location, int creatorId, string type, string priority, string status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity != null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
                     $"Activity with this {title} already exists.");
             }
 
-            activity = new Activity(title, description, timestart, timeEnd, location,
-                creatorId, type, priority, status);
+            activity = new Activity(title, description, timestart, timeEnd, location, creatorId);
+
+            activity.SetStates(type, priority, status);
+
             await _activityRepository.AddAsync(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, string location,
-            int creatorId, ActivityType type, ActivityPriority priority, ActivityStatus status)
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd,
+            string location, int creatorId, string type, string priority, string status)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
-                    $"Activity with this id: {id} not exists.");
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
+                    $"Activity with this title: {title} not exists.");
             }
 
             activity.SetTitle(title);
@@ -104,23 +105,24 @@ namespace Manager.Struct.Services
             activity.SetTimeEnd(timeEnd);
             activity.SetLocation(location);
             activity.SetCreator(creatorId);
-            activity.Type = type;
-            activity.Priority = priority;
-            activity.Status = status;
 
-            await _activityRepository.UpdateAsync(activity);
+            activity.SetStates(type, priority, status);
+
+            _activityRepository.Update(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
-      
+
         public async Task DeleteAsync(int id)
         {
             var activity = await _activityRepository.GetAsync(id);
             if (activity == null)
             {
-                throw new ServiceException(ErrorCodes.TaskNotFound,
-                    $"task with this id: {id} not exists.");
+                throw new ServiceException(ErrorCodes.ActivityNotFound,
+                    $"task with this id: {activity.Title} not exists.");
             }
 
-            _activityRepository.DeleteAsync(activity);
+            _activityRepository.Delete(activity);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

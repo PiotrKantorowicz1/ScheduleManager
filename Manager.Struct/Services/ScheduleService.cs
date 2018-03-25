@@ -1,10 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Manager.Core.Models;
+using Manager.Core.Queries.Schedules;
 using Manager.Core.Repositories;
+using Manager.Core.Types;
 using Manager.Struct.DTO;
+using Manager.Struct.EF;
 using Manager.Struct.Exceptions;
 
 namespace Manager.Struct.Services
@@ -14,14 +16,16 @@ namespace Manager.Struct.Services
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAttendeeRepository _attendeeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public ScheduleService(IScheduleRepository scheduleRepository, IUserRepository userRepository,
-            IAttendeeRepository attendeeRepository, IMapper mapper)
+            IAttendeeRepository attendeeRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
             _attendeeRepository = attendeeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -55,87 +59,102 @@ namespace Manager.Struct.Services
                 var user = await _userRepository.GetAsync(attendee.UserId);
                 scheduleDetails.Attendees.Add(_mapper.Map<User, UserDto>(user));
             }
-
             return scheduleDetails;
         }
 
-        public async Task<IEnumerable<ScheduleDto>> BrowseAsync()
+        public async Task<PagedResult<ScheduleDto>> BrowseAsync()
         {
-            var schedules = await _scheduleRepository.GetAllAsync();
-
-            return _mapper.Map<IEnumerable<Schedule>, IEnumerable<ScheduleDto>>(schedules);
+            var schedules = await _scheduleRepository.GetAllPageable();
+            return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(schedules);
         }
 
-        public async Task<IEnumerable<ScheduleDto>> GetSchedulesAsync(int id)
+        public async Task<PagedResult<ScheduleDto>> BrowseByCreatorAsync(BrowseSchedulesByCreator query)
         {
-            var userSchedules = await _scheduleRepository.FindByAsync(s => s.CreatorId == id);
-            if (userSchedules == null)
+            var filterSchedules = await _scheduleRepository.GetAllPageable(s => s.CreatorId == query.CreatorId, query);
+            return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
+        }
+
+        public async Task<PagedResult<ScheduleDto>> BrowseByTitleAsync(BrowseSchedulesByTitle query)
+        {
+            var filterSchedules = await _scheduleRepository.GetAllPageable(s => s.Title == query.Titile, query);
+            return _mapper.Map<PagedResult<Schedule>, PagedResult<ScheduleDto>>(filterSchedules);
+        }
+
+        public async Task CreateAsync(int id, string title, string description, DateTime timestart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
+        {
+            var schedule = await _scheduleRepository.GetByAsync(id);
+            if (schedule != null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
-                    $"schedules with this ids: {id} not exists.");
+                    $"Schedule with this {title} already exists.");
             }
 
-            return _mapper.Map<IEnumerable<Schedule>, IEnumerable<ScheduleDto>>(userSchedules);
-        }
+            schedule = new Schedule(title, description, timestart, timeEnd, location,
+                creatorId);
+            await _scheduleRepository.AddAsync(schedule);
 
-        public async Task<ScheduleDto> CreateAsync(ScheduleDto schedule)
-        {
-            var newSchedule = _mapper.Map<ScheduleDto, Schedule>(schedule);
-            newSchedule.CreatedAt = DateTime.UtcNow;
-
-            await _scheduleRepository.AddAsync(newSchedule);
-
-            foreach (var userId in schedule.Attendees)
+            foreach (var attendee in schedule.Attendees)
             {
-                newSchedule.Attendees.Add(new Attendee {UserId = userId});
+                schedule.Attendees.Add(new Attendee(schedule.Id, attendee.Id));
             }
-
-            return _mapper.Map<Schedule, ScheduleDto>(newSchedule);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<ScheduleDto> EditAsync(int id)
+        public async Task UpdateAsync(int id, string title, string description, DateTime timeStart, DateTime timeEnd, 
+            string location, int creatorId, string type, string status)
         {
-            var _schedule = await _scheduleRepository.GetAsync(id);
-            if (_schedule == null)
+            var schedule = await _scheduleRepository.GetAsync(id);
+            if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
-                    $"schedule with this id: {id} not exists.");
+                    $"Schedule with this id: {id} not exists.");
             }
 
-            await _scheduleRepository.UpdateAsync(_schedule);
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
+            schedule.SetTitle(title);
+            schedule.SetDescription(description);
+            schedule.SetTimeStart(timeStart);
+            schedule.SetTimeEnd(timeEnd);
+            schedule.SetLocation(location);
+            schedule.SetCreator(creatorId);
+            schedule.Type = type;
+            schedule.Status = status;
 
-            foreach (var userId in _schedule.Attendees)
+            _scheduleRepository.Update(schedule);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id);
+
+            foreach (var attendee in schedule.Attendees)
             {
-                await _attendeeRepository.AddAsync(userId);
+                await _attendeeRepository.AddAsync(new Attendee(id, attendee.Id));
             }
-
-            return _mapper.Map<Schedule, ScheduleDto>(_schedule);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var removeSchedule = await _scheduleRepository.GetByAsync(id);
-            if (removeSchedule == null)
+            var schedule = await _scheduleRepository.GetAsync(id);
+            if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id);
-            _scheduleRepository.DeleteAsync(removeSchedule);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id);
+            _scheduleRepository.Delete(schedule);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task DeleteAttendeesAsync(int id, int attendee)
+        public async Task DeleteAttendeesAsync(int id, int attendeeId)
         {
-            var removeSchedule = await _scheduleRepository.GetByAsync(id);
-            if (removeSchedule == null)
+            var schedule = await _scheduleRepository.GetByAsync(id);
+            if (schedule == null)
             {
                 throw new ServiceException(ErrorCodes.ScheduleNotFound,
                     $"schedule with this id: {id} not exists.");
             }
 
-            _attendeeRepository.DeleteWhereAsync(a => a.ScheduleId == id && a.UserId == attendee);
+            _attendeeRepository.DeleteWhere(a => a.ScheduleId == id && a.UserId == attendeeId);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

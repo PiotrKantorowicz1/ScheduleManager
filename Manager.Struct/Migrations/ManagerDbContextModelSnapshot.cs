@@ -3,6 +3,9 @@ using Manager.Struct.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace Manager.Struct.Migrations
@@ -24,7 +27,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 948, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 25, 13, 34, 41, 676, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -32,13 +35,13 @@ namespace Manager.Struct.Migrations
 
                     b.Property<string>("Location");
 
-                    b.Property<int>("Priority")
+                    b.Property<string>("Priority")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(2);
+                        .HasDefaultValue("medium");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1);
+                        .HasDefaultValue("toComplete");
 
                     b.Property<DateTime>("TimeEnd");
 
@@ -46,13 +49,13 @@ namespace Manager.Struct.Migrations
 
                     b.Property<string>("Title");
 
-                    b.Property<int>("Type")
+                    b.Property<string>("Type")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1);
+                        .HasDefaultValue("work");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 948, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 25, 13, 34, 41, 676, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -79,6 +82,26 @@ namespace Manager.Struct.Migrations
                     b.ToTable("Attendee");
                 });
 
+            modelBuilder.Entity("Manager.Core.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<DateTime?>("RevokedAt");
+
+                    b.Property<string>("Token");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
+                });
+
             modelBuilder.Entity("Manager.Core.Models.Schedule", b =>
                 {
                     b.Property<int>("Id")
@@ -86,7 +109,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 940, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 25, 13, 34, 41, 669, DateTimeKind.Local));
 
                     b.Property<int>("CreatorId");
 
@@ -94,9 +117,9 @@ namespace Manager.Struct.Migrations
 
                     b.Property<string>("Location");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1);
+                        .HasDefaultValue("toComplete");
 
                     b.Property<DateTime>("TimeEnd");
 
@@ -104,13 +127,13 @@ namespace Manager.Struct.Migrations
 
                     b.Property<string>("Title");
 
-                    b.Property<int>("Type")
+                    b.Property<string>("Type")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1);
+                        .HasDefaultValue("work");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 10, 1, 47, 54, 943, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 25, 13, 34, 41, 673, DateTimeKind.Local));
 
                     b.HasKey("Id");
 
@@ -145,7 +168,7 @@ namespace Manager.Struct.Migrations
 
                     b.Property<string>("Role");
 
-                    b.Property<string>("Salt");
+                    b.Property<Guid>("SerialNumber");
 
                     b.Property<DateTime>("UpdatedAt");
 
@@ -157,7 +180,7 @@ namespace Manager.Struct.Migrations
             modelBuilder.Entity("Manager.Core.Models.Activity", b =>
                 {
                     b.HasOne("Manager.Core.Models.User", "Creator")
-                        .WithMany("ActivityCreated")
+                        .WithMany("ActivitiesCreated")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -171,6 +194,14 @@ namespace Manager.Struct.Migrations
 
                     b.HasOne("Manager.Core.Models.User", "User")
                         .WithMany("SchedulesAttended")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Manager.Core.Models.RefreshToken", b =>
+                {
+                    b.HasOne("Manager.Core.Models.User", "User")
+                        .WithMany("Tokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
