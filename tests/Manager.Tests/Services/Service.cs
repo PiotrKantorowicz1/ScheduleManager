@@ -6,7 +6,7 @@ using Manager.Struct.Services;
 using Moq;
 using Xunit;
 
-namespace Passenger.Tests.Services
+namespace Manager.Services.Tests.Services
 {
     public class UserServiceTests
     {
