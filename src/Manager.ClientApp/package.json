@@ -4,11 +4,14 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
+    "lite": "lite-server",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +26,7 @@
     "@angular/router": "^5.2.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.5.6",
+    "systemjs": "^0.20.19",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
@@ -43,6 +47,8 @@
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
+    "concurrently": "^3.5.0",
+    "lite-server": "^2.3.0",
     "typescript": "~2.5.3"
   }
 }

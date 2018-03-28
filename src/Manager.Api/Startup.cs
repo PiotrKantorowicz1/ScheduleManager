@@ -80,7 +80,8 @@ namespace Manager.Api
                         cors.AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader()
-                            .AllowCredentials()
+                            .AllowCredentials()                       
+                            .WithOrigins("http://localhost:5000/accounts/sign-in")
                             .WithExposedHeaders(Headers));
             });
 
@@ -110,7 +111,7 @@ namespace Manager.Api
                 dataInitializer.SeedAsync();
             }
 
-            app.UseMvc();
+            app.UseMvc();          
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
         }
