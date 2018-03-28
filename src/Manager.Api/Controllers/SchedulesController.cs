@@ -24,7 +24,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Get(int id)
             => Single(await _scheduleSerivce.GetAsync(id), x => x.Id == id || IsAdmin);
 
-        [HttpGet("id}/Details")]
+        [HttpGet("{id}/Details")]
         public async Task<IActionResult> GetScheduleDetails(int id)
             => Single(await _scheduleSerivce.GetScheduleDetailsAsync(id), x => x.Id == id || IsAdmin);
 

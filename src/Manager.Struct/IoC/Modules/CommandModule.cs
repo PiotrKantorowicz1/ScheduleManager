@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Autofac;
 using Manager.Struct.Commands;
+using Manager.Struct.Services;
 
 namespace Manager.Struct.IoC.Modules
 {

@@ -25,8 +25,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> SignUp([FromBody] SignUp command)
         { 
             await DispatchAsync(command);
-
-            return Created($"users/'{command.Email}'", null);
+            return Created($"Accounts/{command.Email}",null);
         }
 
         [AllowAnonymous]
@@ -42,16 +41,14 @@ namespace Manager.Api.Controllers
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword command)
         {
-            await DispatchAsync(command);
-            
+            await DispatchAsync(command);           
             return Content($"Password from user with id: '{command.UserId}' was changed successfully.");
         }
 
         [HttpPost("Revoke")]
         public async Task<IActionResult> Revoke([FromBody] Revoke command)
         {
-            await DispatchAsync(command);
-            
+            await DispatchAsync(command);            
             return Content($"Successfully logout user with id: '{command.UserId}'");
         }
 
@@ -60,7 +57,6 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> ChangeRole([FromBody] ChangeRole command)
         {
             await DispatchAsync(command);
-
             return Content($"Role from user with id: '{command.Id}' was changed succesfully");
         }
 
@@ -68,7 +64,6 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {         
             await DispatchAsync(new DeleteAccount(id));
-
             return Content($"Successfully deleted user with id: {id}");
         }
 
