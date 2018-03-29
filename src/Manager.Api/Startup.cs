@@ -76,13 +76,12 @@ namespace Manager.Api
 
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", cors =>
-                        cors.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials()                       
-                            .WithOrigins("http://localhost:5000/accounts/sign-in")
-                            .WithExposedHeaders(Headers));
+                options.AddPolicy("CorsPolicy",
+                    cors => cors
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             var builder = new ContainerBuilder();
