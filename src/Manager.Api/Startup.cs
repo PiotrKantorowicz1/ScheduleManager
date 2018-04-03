@@ -24,7 +24,7 @@ namespace Manager.Api
 {
     public class Startup
     {
-        private static readonly string[] Headers = new []{"X-Operation", "X-Resource", "X-Total-Count"};
+        private static readonly string[] Headers = new[] { "X-Operation", "X-Resource", "X-Total-Count" };
         public IContainer ApplicationContainer { get; private set; }
         public IConfiguration Configuration { get; }
 
@@ -36,10 +36,29 @@ namespace Manager.Api
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ManagerDbContext>(options =>
-            {
+
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"));
-            });
+                    Configuration.GetConnectionString("DefaultConnection")));
+            
+            var section = Configuration.GetSection("jwt");
+            var opts = new JwtOptions();
+            section.Bind(opts);
+            services.AddSingleton(opts);
+            services.AddAuthentication()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SecretKey)),
+                        ValidIssuer = opts.Issuer,
+                        ValidAudience = opts.ValidAudience,
+                        ValidateAudience = opts.ValidateAudience,
+                        ValidateLifetime = opts.ValidateLifetime
+                    };
+                });
+
+            services.AddAuthorization(x => x.AddPolicy("admin", p => p.RequireRole("admin")));
 
             services.AddCors();
 
@@ -55,33 +74,14 @@ namespace Manager.Api
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
-
-            var section = Configuration.GetSection("jwt");
-            var opts = new JwtOptions();
-            section.Bind(opts);
-            services.AddSingleton(opts);
-            services.AddAuthentication()
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(opts.SecretKey)),
-                        ValidIssuer = opts.Issuer,
-                        ValidAudience = opts.ValidAudience,
-                        ValidateAudience = opts.ValidateAudience,
-                        ValidateLifetime = opts.ValidateLifetime
-                    };
-                });
-            
-            services.AddAuthorization(x => x.AddPolicy("admin", p => p.RequireRole("admin")));
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy", cors => 
-                        cors.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials()
-                            .WithExposedHeaders(Headers));
+                options.AddPolicy("CorsPolicy",
+                    cors => cors
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
             });
 
             var builder = new ContainerBuilder();
@@ -110,7 +110,7 @@ namespace Manager.Api
                 dataInitializer.SeedAsync();
             }
 
-            app.UseMvc();
+            app.UseMvc();          
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
         }

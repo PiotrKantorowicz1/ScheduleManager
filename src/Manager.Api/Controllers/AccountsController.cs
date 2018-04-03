@@ -25,7 +25,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> SignUp([FromBody] SignUp command)
         { 
             await DispatchAsync(command);
-            return Content($"Successfully created account with name: '{command.Name}'");
+            return Created($"Accounts/{command.Email}",null);
         }
 
         [AllowAnonymous]
