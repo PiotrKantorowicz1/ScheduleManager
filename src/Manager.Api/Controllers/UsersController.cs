@@ -53,7 +53,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Update([FromBody] UpdateUser command)
         {
             await DispatchAsync(command);
-            return Content($"Succesfully updated user with Name: '{command.Name}'");
+            return NoContent();
         }
 
         [AdminAuth]
@@ -61,7 +61,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> DeleteActivities(int id)
         {
             await DispatchAsync(new RemoveUserActivities(id));
-            return Content($"Successfully delete activitivies");
+            return NoContent();
         }
 
         [AdminAuth]
@@ -69,7 +69,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> DeleteSchedules(int id)
         {
             await DispatchAsync(new RemoveUserSchedules(id));
-            return Content($"Successfully delete schedules");
+            return NoContent();
         }
 
         [AdminAuth]
@@ -77,7 +77,7 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> DeleteAttendees(int id)
         {
             await DispatchAsync(new RemoveUserAttendees(id));
-            return Content($"Successfully delete attendees");
+            return NoContent();
         }
     }
 }

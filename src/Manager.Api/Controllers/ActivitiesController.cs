@@ -46,14 +46,14 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Create([FromBody] CreateActivity command)
         {
             await DispatchAsync(command);
-            return Content($"Successfully created activity with title: '{command.Title}'");
+            return Created($"Successfully created activity with title: '{command.Title}'", null);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Put([FromBody] UpdateActivity command)
         {
             await DispatchAsync(command);
-            return Content($"Successfully updated activity with title: '{command.Title}'");
+            return NoContent();
         }
 
         [HttpDelete("Remove/{id}")]
