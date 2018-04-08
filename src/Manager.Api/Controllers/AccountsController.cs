@@ -42,14 +42,14 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword command)
         {
             await DispatchAsync(command);           
-            return Content($"Password from user with id: '{command.UserId}' was changed successfully.");
+            return NoContent();
         }
 
         [HttpPost("Revoke")]
         public async Task<IActionResult> Revoke([FromBody] Revoke command)
         {
             await DispatchAsync(command);            
-            return Content($"Successfully logout user with id: '{command.UserId}'");
+            return NoContent();
         }
 
         [AdminAuth]
@@ -57,14 +57,14 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> ChangeRole([FromBody] ChangeRole command)
         {
             await DispatchAsync(command);
-            return Content($"Role from user with id: '{command.Id}' was changed succesfully");
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {         
             await DispatchAsync(new DeleteAccount(id));
-            return Content($"Successfully deleted user with id: {id}");
+            return NoContent();
         }
 
     }

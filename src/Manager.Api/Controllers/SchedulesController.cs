@@ -46,21 +46,21 @@ namespace Manager.Api.Controllers
         public async Task<IActionResult> Create([FromBody]CreateSchedule command)
         {
             await DispatchAsync(command);
-            return Content($"Successfully created schedule with title: '{command.Title}'");
+            return Created($"Successfully created schedule with title: '{command.Title}'", null);
         }
 
         [HttpPut("Update")]
         public async Task<IActionResult> Put(UpdateSchedule command)
         {
             await DispatchAsync(command);
-            return Content($"Successfully updated schedule with title: '{command.Title}'");
+            return NoContent();
         }
 
         [HttpDelete("Remove/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await DispatchAsync(new DeleteSchedule(id));
-            return Content($"Successfully deleted schedule with id: '{id}'");
+            return NoContent();
         }
 
         [HttpDelete("Remove/{scheduleId}/Attendee/{attendeeId}")]

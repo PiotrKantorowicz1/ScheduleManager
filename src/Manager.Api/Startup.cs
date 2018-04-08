@@ -19,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using System.Reflection;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace Manager.Api
 {
@@ -74,14 +75,15 @@ namespace Manager.Api
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
+            var corsBuilder = new CorsPolicyBuilder();            
+            corsBuilder.WithOrigins("http://localhost:4200");
+            corsBuilder.AllowAnyMethod();
+            corsBuilder.AllowAnyHeader();
+            corsBuilder.AllowCredentials();
+
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy",
-                    cors => cors
-                        .WithOrigins("http://localhost:4200")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials());
+                options.AddPolicy("manager.client-app", corsBuilder.Build());
             });
 
             var builder = new ContainerBuilder();
@@ -96,6 +98,7 @@ namespace Manager.Api
             IApplicationLifetime appLifetime, ILoggerFactory loggerFactory)
         {
             app.UseStaticFiles();
+            app.UseCors("manager.client-app");
 
             loggerFactory.AddNLog();
             app.AddNLogWeb();
