@@ -66,6 +66,5 @@ namespace Manager.Api.Controllers
             await DispatchAsync(new DeleteAccount(id));
             return NoContent();
         }
-
     }
 }
