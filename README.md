@@ -1,1 +1,1 @@
-server
+Schedule manager
